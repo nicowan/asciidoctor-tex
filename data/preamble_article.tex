@@ -1,34 +1,34 @@
-%% A minimal LaTeX preamble
-%% Some packates are needed to implement
-%% Asciidoc features
+\documentclass[14pt, a4paper]{scrartcl}
+\usepackage{cfptarticle}
 
-\documentclass[11pt]{amsart}
-\usepackage{geometry}                % See geometry.pdf to learn the layout options. There are lots.
-\geometry{letterpaper}               % ... or a4paper or a5paper or ...
+%\usepackage{geometry}                % See geometry.pdf to learn the layout options. There are lots.
+%\geometry{a4paper}                   % ... or a4paper or a5paper or ...
 %\geometry{landscape}                % Activate for for rotated page geometry
 %\usepackage[parfill]{parskip}       % Activate to begin paragraphs with an empty line rather than an indent
 
 \usepackage{tcolorbox}
-\usepackage{lipsum}
+%\usepackage{lipsum}
 
-\usepackage{epstopdf}
-\usepackage{color}
+%\usepackage{epstopdf}
+%\usepackage{color}
 % \usepackage[usenames, dvipsnames]{color}
 % \usepackage{alltt}
 
+%\usepackage{array}
+%\usepackage{multirow}
 
-\usepackage{amssymb}
+%\usepackage{amssymb}
 % \usepackage{amsmath}
-\usepackage{amsthm}
-\usepackage[version=3]{mhchem}
+%\usepackage{amsthm}
+%\usepackage[version=3]{mhchem}
 
 
 % Needed to properly typeset
 % standard unicode characters:
 %
-\RequirePackage{fix-cm}
-\usepackage{fontspec}
-\usepackage[Latin,Greek]{ucharclasses}
+%\RequirePackage{fix-cm}
+%\usepackage{fontspec}
+%\usepackage[Latin,Greek]{ucharclasses}
 %
 % NOTE: you must also use xelatex
 % as the typesetting engine
@@ -38,19 +38,30 @@
 % \usepackage{polyglossia}
 % \setmainlanguage{en}
 
-\usepackage{hyperref}
-\hypersetup{
-    colorlinks=true,
-    linkcolor=blue,
-    filecolor=magenta,
-    urlcolor=cyan,
-}
+%\usepackage{hyperref}
+%\hypersetup{
+%    colorlinks=true,
+%    linkcolor=blue,
+%    filecolor=magenta,
+%    urlcolor=cyan,
+%}
 
-\usepackage{graphicx}
+%\usepackage{graphicx}
 \usepackage{wrapfig}
-\graphicspath{ {images/} }
-\DeclareGraphicsExtensions{.png, .jpg, jpeg, .pdf}
+%\graphicspath{%
+%    {/home/nicolas/cfpt/assets/}%
+%    {/home/nicolas/cfpt/assets/icons/}%
+%    {/home/nicolas/cfpt/templates/icons/}%
+%    {/home/nicolas/cfpt/templates/images/}%
+%    {./images/}%
+%    {../images/}%
+%    {../../images/}%
+%}
+%\DeclareGraphicsExtensions{.png, .jpg, jpeg, .pdf}
 
 %% \DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
 
-\makeindex
+%\usepackage{listings}
+%\usepackage{minted}
+
+%\makeindex

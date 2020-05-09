@@ -1,14 +1,37 @@
-
-
 % \pagecolor{black}
 %%%%%%%%%%%%
 
+% Variables pour calculer la largeur d'une image placée en regard de texte
+%\newdimen\wrapImgWidth{}
+%\newdimen\wrapTxtWidth{}
+%\newdimen\wrapTmpWidth{}
+
+% Afficher une boîte avec une image à gauche du texte
+%     \iconbox{image}{text}
+%\newcommand{\iconbox}[2]{
+%    \settowidth{\wrapImgWidth}{~\includegraphics[width=1cm]{#1}~}
+%    \setlength{\wrapTxtWidth}{-\wrapImgWidth}
+%    \settowidth{\wrapTmpWidth}{~~{\color{black!10}\vrule width 2mm}~~}
+%    \setlength{\wrapTmpWidth}{-\wrapTmpWidth}
+%    \addtolength{\wrapTxtWidth}{\linewidth}
+%    \addtolength{\wrapTxtWidth}{\wrapTmpWidth}
+%    \vspace{0.1em}
+%    \begin{minipage}[c]{\wrapImgWidth}%
+%    ~\includegraphics[width=1cm]{#1}~
+%    \end{minipage}%
+%    ~~{\color{black!10}\vrule width 0.5mm}~~
+%    \begin{minipage}[c]{\wrapTxtWidth}%
+%    #2
+%    \end{minipage}
+%    \newline   
+%    \vspace{0.1em}
+%}
 
 % Needed for Asciidoc
 
-\newcommand{\admonition}[2]{\textbf{#1}: {#2}}
 \newcommand{\rolered}[1]{ \textcolor{red}{#1} }
 \newcommand{\roleblue}[1]{ \textcolor{blue}{#1} }
+\newcommand{\admonition}[2]{\vspace{0.5em}\iconbox{#1}{#2}\vspace{0.5em}}
 
 \newtheorem{theorem}{Theorem}
 \newtheorem{proposition}{Proposition}

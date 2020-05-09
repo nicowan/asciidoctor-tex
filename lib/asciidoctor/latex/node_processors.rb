@@ -266,12 +266,6 @@ module Asciidoctor
         self.quote_process
       when :open
         self.open_process
-      when :environment
-        self.environment_process
-      when :environment_literal
-        self.environment_literal_process
-      when :click
-        self.click_process
       when :listing
         self.listing_process
       when :example
@@ -305,6 +299,8 @@ module Asciidoctor
         out << $tex.region('bf', title) + ' '
       end
       content =  LaTeX::TeXPostProcess.make_substitutions(self.content)
+      content = content.gsub("$", "\\$")
+      content = content.gsub("_", "\\_")
       if role == "red"
         content = content.macro('rolered')
       elsif role == "blue"
@@ -327,7 +323,7 @@ module Asciidoctor
     end
 
     def admonition_process
-      $tex.macro 'admonition', self.style, self.content
+      "#{$tex.macro 'admonition', self.style, self.content}\n"
     end
 
     def page_break_process
@@ -370,7 +366,7 @@ module Asciidoctor
 
 
 
- ####################################################################
+    ####################################################################
 
     def label
       if self.id
@@ -394,7 +390,7 @@ module Asciidoctor
       end
     end
 
- ####################################################################
+    ####################################################################
 
     def label_line
       if label == ""
@@ -427,10 +423,6 @@ module Asciidoctor
       end
     end
 
-    def handle_chem
-      $tex.env 'equation', "#{label_line}\\ce\{#{self.content.strip}\}\n"
-    end
-
     def handle_plain(env)
 
       if self.id and self.title
@@ -448,134 +440,7 @@ module Asciidoctor
       $tex.env env, "#{_title}#{label_line}#{content}\n"
     end
 
- ####################################################################
-
-    def environment_process
-
-      env = self.attributes["role"]
-
-      # record any environments encountered but not built=in
-      if !STANDARD_ENVIRONMENT_NAMES.include? env and !$latex_environment_names.include? env
-        $latex_environment_names << env
-      end
-
-      case env
-        when 'listing'
-          handle_listing
-        when 'equationalign'
-          handle_eqalign
-        when 'equation'
-          handle_equation
-        when 'chem'
-          handle_chem
-        when 'box'
-          handle_box
-        when 'texmacro'
-          handle_texmacro
-        when 'include_latex'
-          handle_include_latex
-        else
-          handle_plain(env)
-      end
-
-
-    end
-
-    def environment_literal_process
-
-      env = self.attributes["role"]
-
-      # record any environments encountered but not built=in
-      if !STANDARD_ENVIRONMENT_NAMES.include? env and !$latex_environment_names.include? env
-        $latex_environment_names << env
-      end
-
-      case env
-        when 'equationalign'
-          handle_eqalign
-        when 'equation'
-          handle_equation
-        else
-          handle_plain(env)
-      end
-
-
-    end
-
-    def handle_texmacro
-      "%% User tex macros:\n#{self.content}\n%% end of user macros\n"
-    end
-
-   # Example:
-   # [env.include_latex]
-   # --
-   # \nput abc.text
-   # \usepackage{def}
-   # --
-   # Nothing appears in the HTML,
-   # bu lines
-   # \nput abc.text
-   # \usepackage{def}
-   # appear in the generated tex file.
-    def handle_include_latex
-      puts "Hi Boss, it's me again!"
-      puts self.content
-      puts "---------------"
-      self.content
-    end
-
-    def handle_box
-      if self.title.nil? or self.title == ''
-        $tex.env 'asciidocbox', self.content
-      else
-        $tex.env 'titledasciidocbox',  self.title, self.content
-      end
-    end
-
-    def click_process
-      attr = self.attributes
-      click = self.attributes["role"]
-      # record any environ$ments encounted but not built=in
-      if !STANDARD_ENVIRONMENT_NAMES.include? click
-        $latex_environment_names << click
-      end
-
-      if title
-        title = self.title.downcase
-      end
-
-      # original_title = title.split(' ')[0].downcase
-      # FIXME: the above is  work-around: instead set
-      # originaltitle in clickblock
-
-      if attr['plain-option']
-        content = $tex.region 'rm', self.content
-      else
-        content = $tex.region 'it', self.content
-      end
-
-      # FIXME! This is a temporary hack.
-      # attr['original_title'] can be nil --
-      # it shouldn't be
-      if attr['original_title']
-        if attr['options'] and attr['options'].include? 'numbered'
-          env = attr['original_title'].downcase
-        else
-          env =  attr['original_title'].downcase+'*'
-        end
-      else
-        env = 'click'
-      end
-
-
-
-      if self.id == nil # No label
-        $tex.env env, content
-      else
-        label = $tex.macro 'label', self.id
-        $tex.env env, "#{label}\n#{content}"
-      end
-    end
+    ####################################################################
 
     def toc_process
       if document.attributes['toc-placement'] == 'macro'
@@ -634,8 +499,29 @@ module Asciidoctor
 
     end
 
+    # Generate a listing environment
+    # TODO: insert \usepackage{lstlisting} or \usepackage{minted} in the preamble
     def listing_process
-      "\\begin\{verbatim\}\n#{self.content}\n\\end\{verbatim\}\n"
+      highlighter = self.document.attributes['source-highlighter']
+      language    = self.attributes['language']
+
+      if highlighter == 'pygment'
+        env_name = "minted"
+        if language.nil?
+          language = "text"
+        end
+        language = "\{#{language}\}"
+
+      elsif highlighter == 'lstlisting'
+        env_name == 'lstlisting'
+        language = "[language=#{language}]"
+
+      else  
+        env_name = "verbatim"
+        language = ''
+      end
+
+      return "\\begin\{#{env_name}\}#{language}\n#{self.content}\n\\end\{#{env_name}\}\n"
     end
 
     def example_process
@@ -666,6 +552,78 @@ module Asciidoctor
     end
 
     def image_process
+      # puts "#{self.attributes}"
+      if self.attributes['width']
+        width = self.attributes['width']
+        if    width.include?("mm")
+          width = "#{width.to_f}mm"
+        elsif width.include?("cm")
+          width = "#{width.to_f}cm"
+        elsif width.include?("in")
+          width = "#{width.to_f}in"
+        elsif width.include?("%")
+          width = "#{width.to_f/100}\\textwidth"
+        else
+          width = '\textwidth'
+        end
+      else
+        width = '\textwidth'
+      end
+      raw_image = self.attributes['target']
+      unless (imagesdir = document.attr 'imagesdir').nil_or_empty?
+        raw_image = ::File.join imagesdir, raw_image
+      end
+      if document.attributes['noteshare'] == 'yes'
+        image_rx = /image.*original\/(.*)\?/
+        match_data = raw_image.match image_rx
+        if match_data
+          image = match_data[1]
+        else
+          image = "undefined"
+        end
+      else
+        image = raw_image
+      end
+      if self.title?
+        caption = "\\caption\{#{self.title}\}"
+      else
+        caption = ''
+      end
+      refs = self.parent.document.references  # [:ids]
+      if self.attributes['align'] == 'center'
+        align = '\\centering'
+      else
+        align = ''
+      end
+      float = self.attributes['float']
+      if float
+        figure_type = 'wrapfigure'
+        ftext_width = width # '0.45\\textwidth'
+        caption=''
+      else
+        figure_type = 'figure'
+        ftext_width = ''
+      end
+      case float
+      when 'left'
+        position = '{l}'
+      when 'right'
+        position = '{r}'
+      else
+        position = '[h]'
+      end
+      # pos_option = "#{figure_type}}#{position}"
+      # incl_graphics = $tex.macro_opt, "width=#{width}", image
+      # $tex.env figure_type, "#{pos_option}\{#{ftext_width}\}", incl_graphics,
+      #\n\\includegraphics[width=#{width}]{#{image}}\n#{caption}\n#{align}"
+      "\\begin{#{figure_type}}#{position}\{#{ftext_width}\}\n\\centering\\includegraphics[width=#{width}]{#{image}}\n#{caption}\n#{align}\n\\end{#{figure_type}}\n"
+    end
+
+
+
+
+
+    def old_image_process
       if self.attributes['width']
         width = "#{self.attributes['width'].to_f/100.0}truein"
       else
@@ -768,10 +726,62 @@ module Asciidoctor
         self.inline_callout_process
       when 'inline_indexterm'
         self.inline_indexterm_process
+      when 'inline_image'
+        self.inline_image
       else
         ""
       end
     end
+
+    # NICOLAS
+    def inline_image
+
+      if self.attributes['width']
+        width = self.attributes['width']
+      elsif self.attributes['pdfwidth']
+        width = self.attributes['pdfwidth']
+      end
+
+      if width
+        if    width.include?("mm")
+          width = "#{width.to_f}mm"
+        elsif width.include?("cm")
+          width = "#{width.to_f}cm"
+        elsif width.include?("in")
+          width = "#{width.to_f}in"
+        elsif width.include?("%")
+          width = "#{width.to_f/100}\\textwidth"
+        else
+          width = '\textwidth'
+        end
+      else
+        width = '\textwidth'
+      end
+
+      raw_image = self.target  #self.attributes['target']
+      if raw_image.nil_or_empty?
+        puts "raw_image is nil"
+      else
+        unless (imagesdir = document.attr 'imagesdir').nil_or_empty?
+          raw_image = ::File.join imagesdir, raw_image
+        end  
+      end
+
+      if document.attributes['noteshare'] == 'yes'
+        image_rx = /image.*original\/(.*)\?/
+        match_data = raw_image.match image_rx
+        if match_data
+          image = match_data[1]
+        else
+          image = "undefined"
+        end
+      else
+        image = raw_image
+      end
+
+      " \\includegraphics[width=#{width}]{#{self.image_uri self.target}} "
+    end
+
 
     def inline_quoted_process
       # warn "THIS IS: inline_quoted_process: #{self.type}"  if $VERBOSE
@@ -870,7 +880,273 @@ module Asciidoctor
   end
 
   class Table
+    def old_tex_process
+      # # warn "This is Asciidoctor::Table, tex_process.  I don't know how to do that".yellow +  " (#{self.node_name})".magenta if $VERBOSE
+      # table = Table.new self.parent, self.attributes
+      n_rows = self.rows.body.count
+      n_columns = self.columns.count
+      alignment = (['c']*n_columns).join('|')
+      output = "\\begin\{center\}\n"
+      output << "\\begin\{tabular\}\{|#{alignment}|\}\n"
+      output << "\\hline\n"
+      self.rows.body.each_with_index do |row, index|
+        row_array = []
+        row.each do |cell|
+          if Array === (cell_content = cell.content)
+            row_array << cell_content.join("\n")
+          else
+            row_array << cell_content
+          end
+        end
+        output << row_array.join(' & ')
+        output << " \\\\ \n"
+      end
+      output << "\\hline\n"
+      output << "\\end{tabular}\n"
+      output << "\\end{center}\n"
+      "#{output}"
+    end
 
+    def get_cell_content(the_cell)
+      if Array === the_cell.content
+        the_cell.content.join("\n")
+      else
+        the_cell.content
+      end
+    end
+
+    def multicol(width, fmt, content)
+      if width.nil? || (width == 1)
+        content
+      else
+        "\\multicolumn\{#{width}\}\{#{fmt}\}\{#{content}\}"
+      end
+    end
+
+    def multirow(height, width, content)
+      if height.nil? || (height == 1)
+        content
+      else
+        "\\multirow\{#{height}\}\{#{width}\}\{#{content}\}"
+      end
+    end
+
+    def debug_cell(cell)
+      output = ""
+      if cell.rowspan.nil?
+        output << "rowspan = 1 "
+      else
+        output << "rowspan = #{cell.rowspan} "
+      end
+
+      if cell.colspan.nil?
+        output << "colspan = 1 "
+      else
+        output << "colspan = #{cell.colspan} "
+      end
+  
+      puts "#{output} " + self.get_cell_content(cell)
+    end
+
+    def get_table_width()
+      table_width = 0
+      self.columns.each do |onecol|
+        table_width += onecol.attributes['width']
+      end
+      table_width
+    end
+
+    def get_columns_header(table_width)
+      # DANGER HACK BY Nico
+      # My LaTeX installation adds 0.4cm for each column which is 
+      # about 2.5% of the page width (17cm in my template) so I
+      # reduce the column width by 2.5cm each
+      reduction = 0.025
+      alignment = []
+      self.columns.each do |onecol|
+        width = onecol.attributes['width'].to_f / table_width - reduction
+        width = width.round(3)
+        alignment << "m{#{width}\\textwidth}"
+      end
+      alignment
+    end
+
+    def fill_array(the_array, x, y, dx, dy)
+      maxY = y + dy
+      maxX = x + dx
+      sy   = y
+      while y < maxY do
+        tx = x
+        while tx < maxX do
+          # put 0 on the 1st line and put 1 on other lines
+          if (y == sy)
+            the_array[y][tx] = 0
+          else
+            the_array[y][tx] = ((x == tx) ? dx : 0)
+          end
+          tx = tx + 1
+        end
+        y = y + 1
+      end
+    end
+
+    def tex_process_buggy_borders
+      #-------------------------------------------------------------------------
+      # NICOLAS TABLE LATEX
+      # self.columns[0].attributes[] colnumber, width, halign, valign
+      table_width = self.get_table_width()
+      alignment = self.get_columns_header(table_width.to_f)
+      alignment = alignment.join('|')
+
+      output  = "\\begin\{center\}\n"
+      output << "\\begin\{tabular\}\{|#{alignment}|\}\n"
+      output << "\\hline\n"
+
+      cols_nb = self.columns.count
+      rows_nb = self.rows.body.count
+      output_array = Array.new(rows_nb) { Array.new(cols_nb, 0)}
+
+      # For each line in the table
+      self.rows.body.each_with_index do |row, rowIdx|
+        # Start in cell 0
+        idx = 0
+
+        row.each do |cell|
+          while output_array[rowIdx][idx] != 0 do
+            idx = idx + 1
+          end
+
+          rs = (cell.rowspan.nil? ? 1 : cell.rowspan);
+          cs = (cell.colspan.nil? ? 1 : cell.colspan);
+          self.fill_array(output_array, idx, rowIdx, cs, rs)
+          output_array[rowIdx][idx] = cell
+          idx += cs
+        end # each cell in row
+
+      end # each row in table
+
+      output_array.each_with_index do |row, y|
+        row_array = []
+        rules = ""
+        row.each_with_index do |cell, idx|
+          if cell.is_a? Integer
+            if cell == 0
+              # skip the cell, because au colspan
+            else
+              # Empty cell because of rowspan
+              row_array << self.multicol(cell, "|c|", " ")
+            end
+          else
+            content = self.get_cell_content(cell)
+            content = self.multirow(cell.rowspan, "*", content)
+            row_array << self.multicol(cell.colspan, "|c|", content)
+          end
+
+          if output_array[y+1].nil?
+            rules << "\\cline\{#{idx+1}-#{idx+1}\} "
+          else
+            if output_array[y+1][idx].is_a? Integer
+              if output_array[y+1][idx] == 0
+                # skip the cell, because au colspan
+                rules << "\\cline\{#{idx+1}-#{idx+1}\} "
+              end
+            else
+              rules << "\\cline\{#{idx+1}-#{idx+1}\} "
+            end
+          end
+        end
+
+        output << row_array.join(" & \n")
+        output << "\\\\"
+        output << rules            #output << "\\hline"
+        output << "\n\n"
+      end
+
+      output << "\\hline\n"
+      output << "\\end{tabular}\n"
+      output << "\\end{center}\n"
+      "#{output}"
+      #-------------------------------------------------------------------------
+    end
+
+    def tex_process
+      #-------------------------------------------------------------------------
+      # self.columns[0].attributes[] colnumber, width, halign, valign
+      table_width = self.get_table_width()
+      alignment = self.get_columns_header(table_width.to_f)
+      alignment = alignment.join('|')
+
+      output  = "\\begin\{center\}\n"
+      output << "\\begin\{tabular\}\{|#{alignment}|\}\n"
+      output << "\\hline\n"
+
+      cols_nb  = self.columns.count
+      rows_nb  = self.rows.body.count
+      rowsinfo = Array.new(cols_nb) { "1/1"}   # RowSpan/ColSpan
+
+      # For each line in the table
+      self.rows.body.each_with_index do |row, y|
+        row_array = []
+        borders = ""
+        x = 0
+
+        # Foreach Cells in Row
+        row.each do |cell|
+          # Extract info from previous row
+          old = rowsinfo[x].split('/')
+          ors = old[0].to_i
+          ocs = old[1].to_i
+
+          # Previous row spans down
+          if ors > 1
+            ors -= 1
+            rowsinfo[x] = "#{ors}/#{ocs}"
+            row_array << self.multicol(ocs, "|c|", ' ') # Empty cell
+            if ors == 1
+              borders << "\\cline\{#{x+1}-#{x+ocs}\} "
+            end
+            x += ocs   # Compute next cell x position (skip spanned columns)
+          end
+
+          # Current cell's span information
+          rs = (cell.rowspan.nil? ? 1 : cell.rowspan);
+          cs = (cell.colspan.nil? ? 1 : cell.colspan);
+
+          # Add content to latex result
+          content = self.get_cell_content(cell)
+          content = self.multirow(rs, "*", content)
+          row_array << self.multicol(cs, "|c|", content)
+
+          # Save current cell info for the next row
+          rowsinfo[x] = "#{rs}/#{cs}"
+          if rs == 1
+            borders << "\\cline\{#{x+1}-#{x+cs}\} "
+          end
+          x += cs
+        end # Foreach Cells in Row
+
+        output << row_array.join(" & \n")
+        output << " \\\\"
+        output << " #{borders}"            #output << "\\hline"
+        output << "\n\n"
+
+      end # Foreach Rows in Table
+
+      output << "\\hline\n"
+      output << "\\end{tabular}\n"
+      output << "\\end{center}\n"
+      "#{output}"
+      #-------------------------------------------------------------------------
+    end
+  end
+
+
+
+
+
+
+
+  class OldTable
     def tex_process
       # # warn "This is Asciidoctor::Table, tex_process.  I don't know how to do that".yellow +  " (#{self.node_name})".magenta if $VERBOSE
       # table = Table.new self.parent, self.attributes
@@ -896,9 +1172,7 @@ module Asciidoctor
       output << "\\end{tabular}\n"
       output << "\\end{center}\n"
       "#{output}"
-  end
-
-
+    end
   end
 
 
