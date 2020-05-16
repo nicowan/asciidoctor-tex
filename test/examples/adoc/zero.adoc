@@ -1,5 +1,0 @@
-//.zero
-
-== Zero
-
-This is a test.

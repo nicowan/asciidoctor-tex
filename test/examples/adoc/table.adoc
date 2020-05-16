@@ -1,6 +1,0 @@
-//.table
-|===
-| Eggs | one dozen
-| Potatoes | nine pounds
-| Milks | three quarts
-|===

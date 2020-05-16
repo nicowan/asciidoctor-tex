@@ -1,5 +1,0 @@
-//.line_break
-Roses are red, +
-Daisies are white, +
-But all need the light.
-

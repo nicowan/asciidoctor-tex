@@ -1,7 +1,0 @@
-//.image
-image::sunset.jpg[width=200]
-
-
-//.image
-.Graph
-image::sunset.jpg[width=200]
