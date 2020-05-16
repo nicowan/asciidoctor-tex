@@ -1,50 +1,47 @@
-% \pagecolor{black}
-%%%%%%%%%%%%
-
-% Variables pour calculer la largeur d'une image placée en regard de texte
-%\newdimen\wrapImgWidth{}
-%\newdimen\wrapTxtWidth{}
-%\newdimen\wrapTmpWidth{}
-
-% Afficher une boîte avec une image à gauche du texte
-%     \iconbox{image}{text}
-%\newcommand{\iconbox}[2]{
-%    \settowidth{\wrapImgWidth}{~\includegraphics[width=1cm]{#1}~}
-%    \setlength{\wrapTxtWidth}{-\wrapImgWidth}
-%    \settowidth{\wrapTmpWidth}{~~{\color{black!10}\vrule width 2mm}~~}
-%    \setlength{\wrapTmpWidth}{-\wrapTmpWidth}
-%    \addtolength{\wrapTxtWidth}{\linewidth}
-%    \addtolength{\wrapTxtWidth}{\wrapTmpWidth}
-%    \vspace{0.1em}
-%    \begin{minipage}[c]{\wrapImgWidth}%
-%    ~\includegraphics[width=1cm]{#1}~
-%    \end{minipage}%
-%    ~~{\color{black!10}\vrule width 0.5mm}~~
-%    \begin{minipage}[c]{\wrapTxtWidth}%
-%    #2
-%    \end{minipage}
-%    \newline   
-%    \vspace{0.1em}
-%}
-
 % Needed for Asciidoc
 
 \newcommand{\rolered}[1]{ \textcolor{red}{#1} }
 \newcommand{\roleblue}[1]{ \textcolor{blue}{#1} }
-\newcommand{\admonition}[2]{\vspace{0.5em}\iconbox{#1}{#2}\vspace{0.5em}}
 
-\newtheorem{theorem}{Theorem}
-\newtheorem{proposition}{Proposition}
-\newtheorem{corollary}{Corollary}
-\newtheorem{lemma}{Lemma}
-\newtheorem{definition}{Definition}
-\newtheorem{conjecture}{Conjecture}
-\newtheorem{problem}{Problem}
-\newtheorem{exercise}{Exercise}
-\newtheorem{example}{Example}
-\newtheorem{note}{Note}
-\newtheorem{joke}{Joke}
-\newtheorem{objection}{Objection}
+
+
+
+
+
+
+
+% Variables to compute the admonition text width
+\newdimen\admonitionImgWidth{}
+\newdimen\admonitionTxtWidth{}
+\newdimen\admonitionTmpWidth{}
+
+% A new environment for displaying admonitions
+%   \begin{admonition}{myimage}
+%     some content
+%   \end{admonition}
+\newenvironment{admonition}[1]{
+    % Placed at environment begin
+    \settowidth{\admonitionImgWidth}{\includegraphics[width=1cm]{#1}}
+    \setlength{\admonitionTxtWidth}{-\admonitionImgWidth}
+    \settowidth{\admonitionTmpWidth}{~~{\color{black!10}\vrule width 0.1mm}~~~~}
+    \setlength{\admonitionTmpWidth}{-\admonitionTmpWidth}
+    \addtolength{\admonitionTxtWidth}{\linewidth}
+    \addtolength{\admonitionTxtWidth}{\admonitionTmpWidth}
+    \begin{minipage}[c]{\admonitionImgWidth}%
+        \includegraphics[width=1cm]{#1}
+    \end{minipage}%
+    ~~{\color{black!10}\vrule width 0.1mm}~~~~
+    \begin{minipage}[c]{\admonitionTxtWidth}%
+}{
+    % placed end of environnement
+    \end{minipage}
+    \newline
+}
+
+\newcommand{\adocMenu}[1]{\ovalbox{\texttt{#1}}}
+\newcommand{\adocKeyboard}[1]{\ovalbox{\texttt{#1}}}
+\newcommand{\adocFilename}[1]{\textcolor{blue!50!black}{\textbf{\texttt{#1}}}}
+
 
 
 
@@ -113,38 +110,3 @@
   {\par}
 
 
-%% Dummy environment for testing:
-
-\newenvironment{foo}
-  {\bf Foo.\ }
-  {}
-
-
-\newenvironment{foo*}
-  {\bf Foo.\ }
-  {}
-
-
-\newenvironment{click}
-  {\bf Click.\ }
-  {}
-
-\newenvironment{click*}
-  {\bf Click.\ }
-  {}
-
-
-\newenvironment{remark}
-  {\bf Remark.\ }
-  {}
-
-\newenvironment{capsule}
-  {\leftskip10em\par}
-  {\par}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%% Style
-
-\parindent0pt
-\parskip8pt
