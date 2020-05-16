@@ -17,15 +17,52 @@ $VERBOSE = true
 
 module Asciidoctor::LaTeX
 
+  class LatexEscape < Asciidoctor::Extensions::Preprocessor 
+    def process document, reader
+      return reader if reader.eof?
+      replacement_lines = reader.read_lines.map do |line|
+        #line = line.gsub('{', 'LATEXOPENBRACE')                #    "\\\\{")
+        #line = line.gsub('}', 'LATEXCLOSEBRACE')               #    "\\\\}")
+        #line = line.gsub("&", 'LATEXAMPERSAND')                #    "\\\\&")
+        #line = line.gsub("#", 'LATEXSHARP')                    #    "\\\\#")
+        #line = line.gsub("%", 'LATEXPERCENT')                  #    "\\%")
+        #line = line.gsub("$", 'LATEXDOLLAR')                   #    "\\$")
+        #line = line.gsub("_", 'LATEXUNDERSCORE')               #    "\\_")
+        #line = line.gsub("|", 'LATEXVERTICALPIPE')             #    "\\textbar{}")
+        #line = line.gsub("~", 'LATEXTILDE')                    #    "\\textasciitilde{}")
+        #line = line.gsub("^", 'LATEXCIRCONFLEXE')              #    "\\textasciicircum{}")
+        line
+      end
+      reader.unshift_lines replacement_lines
+      reader
+    end
+  end
+
+  class LatexUnescape < Asciidoctor::Extensions::Postprocessor 
+    def process document, output
+      # When writing latex commands in the target document,
+      # I use some improbable UNICODE chars for curly and square braces
+      # And just before giving back the converted document I convert it 
+      # to the right LaTeX characters
+      output = output.gsub('《', "{")
+      output = output.gsub('》', "}")
+      output = output.gsub('〈', "[")
+      output = output.gsub('〉', "]")
+    end
+  end
+
   class Converter
     include Asciidoctor::Converter
-
     register_for 'latex'
+
 
     # puts "HOLA!".red
 
     Asciidoctor::Extensions.register do
       postprocessor EntToUni if document.basebackend? 'tex' unless document.attributes['unicode'] == 'no'
+      preprocessor  LatexEscape
+      postprocessor LatexUnescape
+
     end
 
     def initialize backend, opts
@@ -39,34 +76,34 @@ module Asciidoctor::LaTeX
 
     def convert node, transform = nil
       case node.node_name
-      when 'document';            node.tex_process  # ok
-      when 'section';             node.tex_process  # ok
-      when 'dlist';               node.tex_process  # ok
-      when 'olist';               node.tex_process  # ok
-      when 'ulist';               node.tex_process  # ok
-      when 'inline_anchor';       node.tex_process  # ok
-      when 'inline_break';        node.tex_process  # ok
-      when 'inline_footnote';     node.tex_process  # ok
-      when 'inline_quoted';       node.tex_process  # ok
-      when 'inline_callout';      node.tex_process  # ok
-      when 'inline_indexterm';    node.tex_process  # ok
-      when 'admonition';          node.tex_process  # ok
-      when 'listing';             node.tex_process  # ok
-      when 'literal';             node.tex_process  # ok
-      when 'page_break';          node.tex_process  # ok
-      when 'paragraph';           node.tex_process  # ok
-      when 'stem';                node.tex_process  # ok
-      when 'pass';                node.tex_process  # ok
-      when 'open';                node.tex_process  # ok
-      when 'quote';               node.tex_process  # ok
-      when 'example';             node.tex_process  # ok
-      when 'floating_title';      node.tex_process  # ok
-      when 'image';               node.tex_process  # ok
-      when 'preamble';            node.tex_process  # ok
-      when 'sidebar';             node.tex_process  # ok
-      when 'verse';               node.tex_process  # ok
-      when 'toc';                 node.tex_process  # ok
-      when 'table';               node.tex_process  # ok
+      when 'document';            node.tex_process  # OK
+      when 'section';             node.tex_process  # OK
+      when 'dlist';               node.tex_process  # OK
+      when 'olist';               node.tex_process  # OK
+      when 'ulist';               node.tex_process  # OK
+      when 'inline_anchor';       node.tex_process  # 
+      when 'inline_break';        node.tex_process  # 
+      when 'inline_footnote';     node.tex_process  # 
+      when 'inline_quoted';       node.tex_process  # 
+      when 'inline_callout';      node.tex_process  # 
+      when 'inline_indexterm';    node.tex_process  # 
+      when 'admonition';          node.tex_process  # OK
+      when 'listing';             node.tex_process  # 
+      when 'literal';             node.tex_process  # 
+      when 'page_break';          node.tex_process  # 
+      when 'paragraph';           node.tex_process  # 
+      when 'stem';                node.tex_process  # 
+      when 'pass';                node.tex_process  # 
+      when 'open';                node.tex_process  # 
+      when 'quote';               node.tex_process  # 
+      when 'example';             node.tex_process  # 
+      when 'floating_title';      node.tex_process  # 
+      when 'image';               node.tex_process  # 
+      when 'preamble';            node.tex_process  # 
+      when 'sidebar';             node.tex_process  # 
+      when 'verse';               node.tex_process  # 
+      when 'toc';                 node.tex_process  # 
+      when 'table';               node.tex_process  # 
       when 'thematic_break';      warn "#{node.node_name} is not implemented"
       when 'colist';              warn "#{node.node_name} is not implemented"
       when 'embedded';            warn "#{node.node_name} is not implemented"
