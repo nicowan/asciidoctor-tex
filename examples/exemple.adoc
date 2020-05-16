@@ -1,0 +1,482 @@
+= Introduction à PHP
+:doctype: article
+:icons: font
+:source-highlighter: pygment
+:imagesdir: images
+:author: Nicolas Wanner
+:notitle:
+//:toc:
+
+
+== Section_première 
+
+Un paragraphe tout simple, Aliqua irure proident voluptate aliqua dolore culpa nulla. Id laboris eiusmod sint incididunt exercitation elit deserunt nostrud. Labore magna fugiat nulla est tempor tempor laboris minim laboris dolor.
+
+Un paragraphe avec des mise en forme en ligne *gras*, _italique_, *_gras et italique_*, `police à espacement fixe`, du texte colorisé [red]#red# [blue]#blue# [green]#green# [yellow]#yellow#  et du texte normal.
+
+* *ha_ha_ha*
+  bla_bla_bla
+
+* hihihi
+  bli bli bli
+
+* hohoho
+  blo blo blo
+
+Un paragraphe avec une image inline, Magna dolore qui esse aliqua duis adipisicing. image:cc-by-nc-sa.jpg[pdfwidth="10%"] Consequat eiusmod consequat dolor tempor. Et in commodo ipsum eiusmod irure enim consectetur eiusmod aliquip reprehenderit reprehenderit voluptate laborum.
+
+. *ha_ha_ha*
+  bla_bla_bla
+
+. hihihi
+  bli bli bli
+
+. hohoho
+  blo blo blo
+
+Consequat eiusmod consequat dolor tempor. Et in commodo ipsum eiusmod irure enim consectetur eiusmod aliquip reprehenderit reprehenderit voluptate laborum.
+
+Ordi perso::
+   Machine électronique programmable
+
+Tablette::
+   Machine électronique pour les consomateurs
+
+Smartphone::
+   Machine électronique qui remplace l'intelligence de l'utilisateur
+
+
+
+
+
+=== Des charactères spéciaux dans des paragraphes
+
+Un paragraphe avec des caractères spéciaux : le $ dollard, le & et commercial, # dièse, _ underline, | pipe, { accolade gauche, } accolade droite, [ crochet carré gauche, ] crochet carré droite, ... points de suspension,  % pourcent, ~ Tilde et le  ^ petit chapeau
+ 
+ 
+==== Des paragraphes en couleurs
+
+[role=blue]
+Text in blue Un paragraphe [red]#red# avec des caractères spéciaux : le $ dollard, le & et commercial, # dièse, _ underline, | pipe, { accolade gauche, } accolade droite, [ crochet carré gauche, ] crochet carré droite, ... points de suspension,  % pourcent, ~ Tilde et le  ^ petit chapeau
+
+[role=red]
+text in red lorem ipsum dolor
+
+[role=green]
+text in green lorem ipsum dolor
+
+[role=yellow]
+text in yellow lorem ipsum dolor
+
+== Des admonitions 
+
+WARNING: Une admonition "inline" avec des caractères spéciaux : le $ dollard, le & et commercial, # dièse, _ underline, | pipe, { accolade gauche, } accolade droite, [ crochet carré gauche, ] crochet carré droite, ... points de suspension,  % pourcent, ~ Tilde et le  ^ petit chapeau
+
+
+[NOTE]
+====
+Une admonition "en block" avec des caractères spéciaux : le $ dollard, le & et commercial, # dièse, _ underline, | pipe, { accolade gauche, } accolade droite, [ crochet carré gauche, ] crochet carré droite, ... points de suspension,  % pourcent, ~ Tilde et le  ^ petit chapeau
+
+Une admonition "en block" avec des caractères spéciaux : le $ dollard, le & et commercial, # dièse, _ underline, | pipe, { accolade gauche, } accolade droite, [ crochet carré gauche, ] crochet carré droite, ... points de suspension,  % pourcent, ~ Tilde et le  ^ petit chapeau
+
+coucou
+====
+
+[IMPORTANT]
+====
+du texte
+
+[source, php]
+----
+$a = rand(0, 10);
+----
+
+====
+
+
+
+
+
+== Les tableaux
+
+[cols="^.^2a,12a", frame=none]
+|====
+| image:icons/objectif.png[width=25%]
+| pasrigolo
+
+Une case de tableau avec des caractères spéciaux : le $ dollard, le & et commercial, # dièse, _ underline, \| pipe, { accolade gauche, } accolade droite, [ crochet carré gauche, ] crochet carré droite, ... points de suspension,  % pourcent, ~ Tilde et le  ^ petit chapeau
+
+Un paragraphe avec des mise en forme en ligne *gras*, _italique_, _*gras et italique*_, `police à espacement fixe`, du texte colorisé [red]#red# [blue]#blue# [green]#green# [yellow]#yellow#  et du texte normal.
+
+|====
+
+
+[cols="25%,75%", role="center"]
+|====
+| Opérateur    | Explication
+| `$a ==  $b`  | valeurs sont égales
+| `$a !=  $b`  | valeurs sont différentes
+| `$a === $b`  | valeurs *et* types sont égales
+| `$a !== $b`  | valeurs *et* types sont différents
+| `$a >  $b`   | `a` est strictement supérieur à `b`
+| `$a >= $b`   | `a` est supérieur ou égal à `b`
+| `$a <  $b`   | `a` est strictement inférieur à `b`
+| `$a \<= $b`  | `a` est inférieur ou égal à `b`
+|====
+
+
+
+
+=== Les instructions
+
+Les instructions sont des ordres donnés à l'ordinateur. Elles sont lues de haut en bas comme une recette de cuisine. Il faut placer *une seule instruction par ligne* et chaque instruction est *terminée par un point-virgule ;*.
+
+[source,php]
+----
+instruction1;
+instruction2;
+instruction3;  // commentaire
+----
+
+Comme dans les  autres langages de programmation, il est possible d'ajouter des commentaires à vos scripts. Un commentaire est du texte qui ne sera pas exécuté mais qui donne des informations complémentaires pour le programmeur. L'exemple suivant montre comment ajouter des commentaires dans un code source:
+fgh
+
+[source,php]
+----
+// Commenter toute une ligne
+instruction1;
+instruction2;     // Commenter en fin de ligne
+
+/*
+Commentaire
+sur plusieurs
+lignes
+*/
+
+instruction4;
+----
+
+
+// ============================================================================
+//
+//
+//
+// ============================================================================
+
+=== Les variables
+
+Les variables permettent de mémoriser des informations durant l'exécution du programme. En PHP, il n'est pas nécessaire de déclarer une variable. Elle sera automatiquement créée la première fois que le programme y fait référence. Mais attention de donner une valeur à une variable avant de l'utiliser dans le reste du programme.
+
+Les noms des variables doivent *obligatoirement* commencer par un signe *$* puis continuer par une lettre ou le caractère sous-ligné *_* Il est ensuite possible de continuer avec des lettres, des chiffres ou le caractère sous-ligné. Le listing suivant montre des exemples de variables.
+
+[source,php]
+----
+$PrixUnitaire = 33.25;
+$nom_celebre  = "Albert";
+$texte_long = 'bonjour les amis';
+$_pas_pratique = false;
+----
+
+NOTE:  Il est interdit d'utiliser des caractères spéciaux ou des lettres accentuées dans les noms de variables.
+
+Le PHP décide par lui même du type d'information qui est stockée dans une variable. De plus le type peut changer au cours du programme.
+
+
+
+==== Les nombres entiers
+
+Les variables de type entier (integer en anglais) permet de stocker des nombres positifs et négatifs sans virgules {..., -3, -2, -1, 0, 1, 2, 3, ...} L'extrait de code suivant montre comment initialiser des variables entières:
+
+[source,php]
+----
+$decimal = 1234;       // Nombre décimal
+$negatif = -123;       // Nombre négatif
+$octal   = 0123;       // Nombre octal (équivalent à 83 décimal)
+$hexa    = 0x1A;       // Nombre hexadécimal (équivalent à 26 décimal)
+$binaire = 0b11111111; // Nombre binaire (équivalent à 255 décimal)
+----
+
+Il est possible d'effectuer les 5 opérations de bases sur des nombres entiers ainsi que de forcer l'ordre des opérations avec des parenthèses comme le montre l'exemple suivant.
+
+[source,php]
+----
+$nb1 = 12;
+$nb2 = 5;
+
+// Les calculs possibles avec des nombres entiers
+$calcul = $nb1 + $nb2;
+$calcul = $nb1 - $nb2;
+$calcul = $nb1 * $nb2;
+$calcul = $nb1 / $nb2;   // Le résultat est un nb à virgule
+$calcul = $nb1 % $nb2;
+
+// Avec des parenthèses
+$calcul = 3 * ($nb1 + 5) / $nb2;
+----
+
+WARNING: Il faut prendre garde avec la division car, le résultat du calcul est automatiquement converti en un nombre à virgule si le résultat le demande.
+
+
+
+
+
+==== Les nombres à virgules
+
+Les variables de type nombres à virgules flottantes (souvent appelés *float*, *double* ou *nombres réels*) permettent de mémoriser des nombres positifs et négatifs avec des virgules. L'extrait de code suivant montre comment initialiser des variables de ce type:
+
+[source,php]
+----
+$a = 1.234;       // 1.234
+$b = 1.2e3;       // 1200
+$c = 7E-10;       // 0.0000000007
+$d = 10.0;        // 10 en tant que nombre à virgule
+----
+
+Il est également possible de réaliser les mêmes opérations que pour les nombres entiers (+, -, *, /), l'opération % n'ayant pas de sens sur les nombres réels, ils sont convertit en entier avant le calcul.
+
+Il existe une bibliothèques de fonctions mathématique qui propose plus de 20 fonctions (`round`, `floor`, `ceil`, `rand`, `sin`, `pow`, ...) qui seront traitées dans un chapitre ultérieur.
+
+
+
+==== Les booléens
+
+Les variables de type booléen permettent de mémoriser une valeur *vraie* ou *fausse*. C'est l'équivalent d'un bit en mémoire. L'extrait de code suivant montre comment initialiser des variables de ce type:
+
+[source, php]
+----
+$a = true;        // $a est vraie
+$b = false;       // $b est fausse
+$c = (32 < 15);   // $c est vraie si la comparaison est vraie
+----
+
+==== Les comparaisons possibles sont
+
+
+Il est possible de réaliser des calculs sur des variables booléennes. Généralement on parle d'opérations logiques. Ce sont:
+
+[source,php]
+----
+// ET logique. Le résultat est vrais seulement si les 2 valeurs sont vraies
+$c = $a && $b;
+
+// OU logique. Le résultat est vrai si au moins 1 des 2 valeurs est vraie
+$c = $a || $b;
+
+// NON logique. Le résultat est l'inverse de l'entrée
+$c = !$a;
+----
+
+
+
+
+==== Les textes
+
+Les variables de type *string* permettent de mémoriser des mélange de texte, de chiffres et de caractères spéciaux où chaque caractère est stocké sous la forme d'un byte (256 possiblités). Il n'y a donc pas de support natif pour l'Unicode en PHP. L'exemple suivant montre comment initialiser des variables de type texte.
+
+[source, php]
+----
+$a = 'un petit texte';     // a: un petit texte
+$b = "un autre";           // b: un autre
+$c <<< LABEL1
+texte
+sur
+plusieurs lignes
+LABEL1
+----
+
+Nous voyons qu'il existe plusieurs façons d'initialiser des chaînes de caractères.
+
+
+
+
+
+
+==== Les tableaux
+
+
+==== Les tableaux associatifs
+
+
+
+
+
+
+
+// ============================================================================
+//
+//
+//
+// ============================================================================
+
+=== Les sélections
+
+
+
+
+
+
+
+
+
+
+// ============================================================================
+//
+//
+//
+// ============================================================================
+
+=== Les boucles while
+
+
+
+
+
+
+
+
+
+
+// ============================================================================
+//
+//
+//
+// ============================================================================
+
+=== Les boucles for
+
+
+
+
+
+
+
+
+
+
+// ============================================================================
+//
+//
+//
+// ============================================================================
+
+=== Les boucles do - while
+
+
+
+
+
+
+
+
+
+
+// ============================================================================
+//
+//
+//
+// ============================================================================
+
+=== Les fonctions
+
+
+
+//.Exemple de la syntaxe du PHP
+//[source,php,numbered]
+//----
+//include::{listings}/syntaxe-base/chap_03_syntax.php[]
+//----
+
+<<<
+
+=== Aides à la lecture
+
+*1* Le PHP permet de définir des constantes à l'aide de la commande `define()`. Le premier paramètre est un string qui indique le nom de la constante, le deuxième donne sa valeur. Il n'est pas possible de définir plusieurs fois la constante. Pour l'utiliser, il suffit d'écrire le nom de la constante comme montré au point *2*.
+
+*2* L'instruction `while` permet de répéter une portion de code tant que la condition entre parenthèses est vraie. Les instructions à répéter sont délimitées par des accolades.
+
+*3* L'instruction `if` permet de décider des instructions à exécuter d'après un critère (une condition). Si la condition est fausse, c'est le bloc d'instruction du `else` qui est exécuté.
+
+==== Autres structures
+
+.Enchaîner les ifs
+[source,php,numbered]
+----
+<?php
+if      ($jour == 1) {
+   echo '<p>Lundi</p>';
+}
+else if ($jour == 2) {
+   echo '<p>Mardi</p>';
+}
+else if ($jour == 3) {
+   echo '<p>Mercredi</p>';
+}
+else {
+   echo '<p>Je ne connais pas les autres jours</p>';
+}
+?>
+----
+
+
+.Répéter avec l'instruction for
+[source,php,numbered]
+----
+<?php
+for($i=0; $i<10; $i++) {
+   echo "<p>Je répète $i</p>";
+}
+?>
+----
+
+.Répéter avec l'instruction do ... while
+[source,php,numbered]
+----
+<?php
+do {
+  $nb = rand(0, 100);
+} while($nb < 5);
+?>
+----
+
+
+
+
+<<<
+
+=== Se faire la main
+
+==== Barème fédéral
+Créez un programme qui permet de transformer une note entière comprise entre 1 et 6 dans une évaluation textuelle
+
+. Insuffisant
+. Très faible
+. Faible
+. Satisfaisant
+. Bien
+. Très bien
+
+==== Liste de nombres
+Réalisez un script qui affiche une liste non-ordonnée de nombres. Les nombres pairs sont affichés en bleu, les nombres impairs en vert.
+
+image::syntaxe-base/pair-impair.png[width=200]
+
+==== Table de multiplications
+Réalisez une table de multiplication sous la forme d'une table HTML avec des entêtes. La taille maximale est fixée par 2 constantes (MAXX et MAXY).
+
+image::syntaxe-base/multiplications.png[width=250]
+
+==== Affiche une pyramide
+Réaliser un script PHP qui affiche une pyramide Incas à l'aide de 2 sortes d'images : Une brique et du ciel. La hauteur de la pyramide est fixée par la constante HAUT. A vous de créer vos propres images!
+
+image::syntaxe-base/pyramide.png[]
+
+==== Conversion de nombres en binaire
+Créer un programme PHP qui convertit un nombre aléatoire entre 0 et 63 dans une suite de bits. La longueur du résultat dépend de la valeur à convertir.
+N'utilisez *pas* la fonction de conversion du PHP!
+
+image::syntaxe-base/binaire.png[]
+
+==== Feuille caillou ciseau
+Faite une page PHP qui simule 10 parties de  feuille-caillou-ciseau entre R2-D2 et C3-PO. Pour chaque tirage, une ligne affiche le choix des 2 droïdes ainsi que le vainqueur du tirage. À la fin, le vainqueur global est indiqué à l'aide d'un texte.
+
+//image::syntaxe-base/fcc.png[]
