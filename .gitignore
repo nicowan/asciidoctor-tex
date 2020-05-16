@@ -8,7 +8,7 @@ mytest/
 /.yardoc/
 /doc/
 .idea
-
+*.gem
 
 # My work
 MYNOTES.adoc
@@ -22,6 +22,14 @@ work/
 *.log
 *.out
 *.toc
+*.bcf
+*.fls
+*.idx
+*.ind
+*.lof
+*.lot
+*.fdb_latexmk
+*synctex.gz
 
 # junk from my test, to remove
 test/examples/tex/*.adoc
@@ -36,6 +44,11 @@ test/examples/tex/foo*
 test/examples/adoc/x*
 test/examples/tex/newEnvironments.tex
 test/examples/tex/asciidoc_tex_macros.tex
+
+# Junk from the examples
+examples/*.tex
+examples/_minted-exemple
+
 jc/
 buildit
 
