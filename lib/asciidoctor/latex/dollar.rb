@@ -16,7 +16,7 @@ require 'asciidoctor/extensions'
 #
 # @jirutka: Advice?
 #
-# module Asciidoctor::LaTeX
+# module Asciidoctor::Latex
 #   # Map DOLLOD to $
 #   class Dollar < Asciidoctor::Extensions::Postprocessor
 # 

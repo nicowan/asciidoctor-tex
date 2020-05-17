@@ -35,7 +35,7 @@
 # and essentially unbounded, since users can define
 # their own environments.
 #
-module Asciidoctor::LaTeX
+module Asciidoctor::Latex
   module TeXBlock
 
     # Find blocks delmited by \[ ... \]

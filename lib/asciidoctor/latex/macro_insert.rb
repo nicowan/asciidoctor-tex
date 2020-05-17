@@ -1,7 +1,7 @@
 require 'asciidoctor'
 require 'asciidoctor/extensions'
 
-module Asciidoctor::LaTeX
+module Asciidoctor::Latex
 
 
   # Prepend lines (in this case tex macro definitions) to a document

@@ -15,7 +15,7 @@ require 'asciidoctor/latex/sectnumoffset-treeprocessor'
 
 $VERBOSE = true
 
-module Asciidoctor::LaTeX
+module Asciidoctor::Latex
 
   class LatexEscape < Asciidoctor::Extensions::Preprocessor 
     def process document, reader
@@ -118,4 +118,4 @@ module Asciidoctor::LaTeX
       end
     end
   end # class Converter
-end # module Asciidoctor::LaTeX
+end # module Asciidoctor::Latex

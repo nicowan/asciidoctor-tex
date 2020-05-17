@@ -85,7 +85,7 @@ require 'asciidoctor/extensions'
 require 'asciidoctor/latex/core_ext/colored_string'
 
 
-module Asciidoctor::LaTeX
+module Asciidoctor::Latex
 
 
   class EnvironmentBlock < Asciidoctor::Extensions::BlockProcessor

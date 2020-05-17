@@ -16,7 +16,7 @@ require 'asciidoctor/extensions'
 #
 # @jirutka: Advice?
 #
-module Asciidoctor::LaTeX
+module Asciidoctor::Latex
   # Map @@DOLLAR: to \$
   class TexPostprocessor < Asciidoctor::Extensions::Postprocessor
 

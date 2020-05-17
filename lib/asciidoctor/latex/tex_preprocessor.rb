@@ -14,7 +14,7 @@ require 'asciidoctor/extensions'
 # be eliminated when I edit the
 # relevant source files on noteshare.
 
-module Asciidoctor::LaTeX
+module Asciidoctor::Latex
   class TeXPreprocessor < Asciidoctor::Extensions::Preprocessor
 
     # Map $...$ to stem:[...]

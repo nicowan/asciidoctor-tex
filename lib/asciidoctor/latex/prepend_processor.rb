@@ -1,7 +1,7 @@
 require 'asciidoctor'
 require 'asciidoctor/extensions'
 
-module Asciidoctor::LaTeX
+module Asciidoctor::Latex
 
   # THIS CLASS IS NO LONGER USED
   # See 'inject_html.rb'

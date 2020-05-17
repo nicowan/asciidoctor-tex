@@ -5,7 +5,7 @@ require 'htmlentities'
 # Map HTML entties to their unicode equivalents
 # before running LaTeX
 #
-module Asciidoctor::LaTeX
+module Asciidoctor::Latex
   class EntToUni < Asciidoctor::Extensions::Postprocessor
 
     def process document, output
