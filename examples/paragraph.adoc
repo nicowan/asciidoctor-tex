@@ -1,0 +1,74 @@
+// Simple paragraph with simple text
+SIMPLE PARAGRAPH : Pariatur est officia consequat velit. Do pariatur commodo laboris proident pariatur in magna nostrud Lorem in incididunt aliqua. Esse incididunt aliqua cillum ad. Voluptate ad sunt proident consequat culpa laborum incididunt excepteur.
+
+// Simple paragraph with a title
+.Title for a simple paragraph
+SIMPLE PARAGRAPH WITH TITLE: Pariatur est officia consequat velit. Do pariatur commodo laboris proident pariatur in magna nostrud Lorem in incididunt aliqua. Esse incididunt aliqua cillum ad. Voluptate ad sunt proident consequat culpa laborum incididunt excepteur.
+
+// Paragraph and title with latex escaped chars
+.Title with $ some_ escape { characters}
+SPECIAL CHAR PARAGRAPH WITH TITLE : Pariatur_est $officia {consequat velit}. Do # pariatur % commodo laboris proident pariatur in magna nostrud Lorem in incididunt aliqua. Esse incididunt aliqua cillum ad. Voluptate ad sunt proident consequat culpa laborum incididunt excepteur.
+
+// Left aligned text
+[.text-left]
+LEFT ALIGNED PARAGRAPH : Pariatur est officia consequat velit. Do pariatur commodo laboris proident pariatur in magna nostrud Lorem in incididunt aliqua. Esse incididunt aliqua cillum ad. Voluptate ad sunt proident consequat culpa laborum incididunt excepteur.
+
+// Right aligned text
+[.text-right]
+RIGHT ALIGNED PARAGRAPH : Pariatur est officia consequat velit. Do pariatur commodo laboris proident pariatur in magna nostrud Lorem in incididunt aliqua. Esse incididunt aliqua cillum ad. Voluptate ad sunt proident consequat culpa laborum incididunt excepteur.
+
+// Centered text
+[.text-center]
+CENTERED PARAGRAPH : Pariatur est officia consequat velit. Do pariatur commodo laboris proident pariatur in magna nostrud Lorem in incididunt aliqua. Esse incididunt aliqua cillum ad. Voluptate ad sunt proident consequat culpa laborum incididunt excepteur.
+
+// Colored paragraphs
+[.blue]
+This paragraph is written in blue
+
+[.red]
+This paragraph is written in red
+
+[.green]
+This paragraph is written in green
+
+[.yellow]
+This paragraph is written in yellow
+
+// Inline quoted paragraph
+bold *constrained* & **un**constrained
+
+italic _constrained_ & __un__constrained
+
+bold italic *_constrained_* & **__un__**constrained
+
+monospace `constrained` & ``un``constrained
+
+monospace bold `*constrained*` & ``**un**``constrained
+
+monospace italic `_constrained_` & ``__un__``constrained
+
+monospace bold italic `*_constrained_*` & ``**__un__**``constrained
+
+Word colored in [red]#red# [blue]#blue# [green]#green# and [yellow]#yellow#
+
+^super^script phrase
+
+~sub~script phrase
+
+"`double curved quotes`"
+
+'`single curved quotes`'
+
+Olaf's desk was a mess.
+
+All of the werewolves`' desks were a mess.
+
+Olaf had been with the company since the `'60s.
+
+This is a codespan : `+WHERE id <=  20 AND value = "{name}\n"+` is a SQL WHERE clause.
+
+This is a simple monospace : `WHERE id <=    20 AND value = "{name}\n"` is a SQL WHERE clause.
+
+This one contains a latex formulae latexmath:[x = \frac{2 \cdot y}{3}]
+
+This one contains a ascii formulae asciimath:[x = \frac{2 \cdot y}{3}]

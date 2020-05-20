@@ -1,0 +1,20 @@
+= Document title
+
+== level 1
+=== level 2
+==== level 3
+===== level 4
+====== level 5
+=== level 2
+==== level 3
+===== level 4
+====== level 5
+== level_with_%&#{^}
+=== level 2
+==== level 3
+===== level 4
+====== level 5
+=== level 2
+==== level 3
+===== level 4
+====== level 5

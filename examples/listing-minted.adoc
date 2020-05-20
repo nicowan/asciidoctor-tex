@@ -1,0 +1,7 @@
+:source-highlighter: pygment
+
+[source, html]
+----
+<h1>I nice title</h1>
+<p>Aliqua aute consectetur eu consequat dolor aliqua dolor excepteur aliquip sint qui.</p>
+----
