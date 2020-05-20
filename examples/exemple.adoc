@@ -7,10 +7,16 @@ V1.0, 15 mai 2020
 :imagesdir: images
 :notitle:
 //:toc:
+:stem: latexmath
 
 == Mises en forme de base
 
-Un paragraphe tout simple, Aliqua irure proident voluptate aliqua dolore culpa nulla. Id laboris eiusmod sint incididunt exercitation elit deserunt nostrud. Labore magna fugiat nulla est tempor tempor laboris minim laboris dolor.
+[stem] 
+++++ 
+x = \frac{2 \cdot y}{3}
+++++
+
+Un paragraphe tout simple, latexmath:[x = \frac{2 \cdot y}{3}] Aliqua irure proident voluptate aliqua dolore culpa nulla. Id laboris eiusmod sint incididunt exercitation elit deserunt nostrud. Labore magna fugiat nulla est tempor tempor laboris minim laboris dolor.
 
 Un paragraphe avec des caractères spéciaux : le $ dollard, le & et commercial, # dièse, _ underline, | pipe, { accolade gauche, } accolade droite, [ crochet carré gauche, ] crochet carré droite, ... points de suspension,  % pourcent, ~ Tilde et le  ^ petit chapeau
 
