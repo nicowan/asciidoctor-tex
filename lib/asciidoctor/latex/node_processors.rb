@@ -193,6 +193,7 @@ module Process
     # TODO: translate language names between converters
     result = ""
     language = node.attributes['language']
+    language = "text" if language == nil or language == ""
 
     case node.document.attributes['source-highlighter']
       when "pygment"
@@ -431,8 +432,6 @@ module Asciidoctor
 
     def tex_process
       case self.blockname
-      #when :paragraph
-      #  paragraph_process
       when :stem
         stem_process
       when :admonition
@@ -447,8 +446,6 @@ module Asciidoctor
         self.quote_process
       when :open
         self.open_process
-      #when :listing
-      #  self.listing_process
       when :example
         self.example_process
       when :floating_title
@@ -463,8 +460,6 @@ module Asciidoctor
         self.verse_process
       when :toc
         self.toc_process
-      # when :table
-        # self.table_process
       else
         # warn "This is Asciidoctor::Block, tex_process.  I don't know how to do that (#{self.blockname})" if $VERBOSE if $VERBOSE
         ""
@@ -474,12 +469,6 @@ module Asciidoctor
     def stem_process
       # Seems to work
       return "\\[#{self.content}\\]"
-      #environment = Latex::TeXBlock.environment_type self.content
-      #if Latex::TeXBlock::INNER_TYPES.include? environment
-      #  "\\\[\n#{Latex::TeXPostProcess.stem_substitutions self.content}\n\\\]\n"
-      #else
-      #  self.content
-      #end
     end
 
     def admonition_process
@@ -565,46 +554,6 @@ module Asciidoctor
       end
     end
 
-    def handle_listing
-      content = $tex.env 'verbatim', self.content
-      $tex.env env, label, content
-    end
-
-    def handle_eqalign
-      content = $tex.env 'aligned', "#{label_line}#{self.content.strip}"
-      if options.include? 'numbered'
-        $tex.env 'align', content
-      else
-        $tex.env 'align*', content
-      end
-    end
-
-    def handle_equation
-      if options.include? 'numbered'
-        content = $tex.hypertarget self.id, self.content.strip
-        $tex.env 'equation', "#{label_line}#{content}"
-      else
-        $tex.env 'equation*', "#{label_line}#{self.content.strip}"
-      end
-    end
-
-    def handle_plain(env)
-
-      if self.id and self.title
-        _title = $tex.hypertarget self.id, self.env_title
-      else
-        _title = self.env_title
-      end
-
-      if self.attributes['plain-option']
-        content = $tex.region 'rm', self.content.rstrip
-      else
-        content = self.content.rstrip
-      end
-
-      $tex.env env, "#{_title}#{label_line}#{content}\n"
-    end
-
     ####################################################################
 
     def toc_process
@@ -613,18 +562,6 @@ module Asciidoctor
       end
       # warn "Please implement me! (toc_process)".red if $VERBOSE
     end
-
-    def report
-      # Report on this node
-      warn ["OPEN BLOCK:".magenta, "id: #{self.id}"].join(" ")
-      warn ["Node:".magenta, "#{self.blockname}".cyan].join(" ")
-      warn ["Attributes:".magenta, "#{self.attributes}".cyan].join(" ")
-      warn ["Title: ".magenta, title.cyan, "style:", self.style].join(" ") if title
-      warn ["Content:".magenta, "#{self.content}".yellow].join(" ")
-      warn ["Style:".green, "#{self.style}".red].join(" ")
-      # warn ["METHODS:".red, "#{self.methods}".yellow].join(" ")
-    end
-
 
     # Process open blocks.  Map a block of the form
     #
@@ -762,61 +699,6 @@ module Asciidoctor
 
 
 
-    def old_image_process
-      if self.attributes['width']
-        width = "#{self.attributes['width'].to_f/100.0}truein"
-      else
-        width = '2.5truein'
-      end
-      raw_image = self.attributes['target']
-      unless (imagesdir = document.attr 'imagesdir').nil_or_empty?
-        raw_image = ::File.join imagesdir, raw_image
-      end
-      if document.attributes['noteshare'] == 'yes'
-        image_rx = /image.*original\/(.*)\?/
-        match_data = raw_image.match image_rx
-        if match_data
-          image = match_data[1]
-        else
-          image = "undefined"
-        end
-      else
-        image = raw_image
-      end
-      if self.title?
-        caption = "\\caption《#{self.title}》"
-      else
-        caption = ''
-      end
-      refs = self.parent.document.references  # [:ids]
-      if self.attributes['align'] == 'center'
-        align = '\\centering'
-      else
-        align = ''
-      end
-      float = self.attributes['float']
-      if float
-        figure_type = 'wrapfigure'
-        ftext_width = width # '0.45\\textwidth'
-        caption=''
-      else
-        figure_type = 'figure'
-        text_width = ''
-      end
-      case float
-      when 'left'
-        position = '《l》'
-      when 'right'
-        position = '《r》'
-      else
-        position = '〈h〉'
-      end
-      # pos_option = "#{figure_type}}#{position}"
-      # incl_graphics = $tex.macro_opt, "width=#{width}", image
-      # $tex.env figure_type, "#{pos_option}《#{ftext_width}》", incl_graphics,
-      #\n\\includegraphics〈width=#{width}]{#{image}}\n#{caption}\n#{align}"
-      "\\begin{#{figure_type}}#{position}《#{ftext_width}》\n\\centering\\includegraphics〈width=#{width}〉{#{image}}\n#{caption}\n#{align}\n\\end{#{figure_type}}\n"
-    end
 
     def preamble_process
       # "\\begin《preamble》\n%% HO HO HO!\n#{self.content}\n\\end《preamble》\n"
@@ -927,56 +809,6 @@ module Asciidoctor
       " \\includegraphics〈width=#{width}〉《#{self.image_uri self.target}》 "
     end
 
-
-    #def inline_quoted_process
-    #  # warn "THIS IS: inline_quoted_process: #{self.type}"  if $VERBOSE
-    #  case self.type
-    #    when :strong
-    #      "\\textbf《#{self.text}》"
-    #    when :emphasis
-    #      "\\emph《#{self.text}》"
-    #    when :asciimath
-    #      output = Asciidoctor.convert( self.text, backend: 'html')
-    #      output
-    #    when :monospaced
-    #      "\\texttt《#{self.text}》"
-    #    when :superscript
-    #      "$《》^{#{self.text}}$"
-    #    when :subscript
-    #      "$《》_{#{self.text}}$"
-    #    when :mark
-    #      "\\colorbox《yellow》《 #{self.text}》"
-    #    when :double
-    #      "``#{self.text}''"
-    #    when :single
-    #      "`#{self.text}'"
-    #    when :latexmath
-    #      "\\( #{self.text} \\)"
-    #      # TODO: The formula is escaped and it should not
-    #      #print self.text
-    #      #"\\( #{LaTeX::TeXPostProcess.stem_substitutions self.text} \\)"
-    #      # output = Asciidoctor.convert self.text, {stem: 'asciimath', backend: 'html'}
-    #      #self.text
-    #    when :unquoted
-    #      result = ""
-    #      role = self.attributes["role"]
-    #      if $colors.include? role
-    #        result << $tex.macro($colors[role], $tex.escape(self.text))
-    #      else
-    #        warn "This is inline_quoted_process.  I don't understand role = #{role}" if $VERBOSE
-    #        result << $self.text
-    #      end
-    #      return result
-    #    when :literal
-    #      "\\texttt《#{self.text}》"
-    #
-    #    when :verse
-    #      "\\texttt《#{self.text}》"
-    #    else
-    #      "\\unknown:#{self.type}\《#{self.text}\》"
-    #  end
-    #end
-
     def inline_anchor_process
 
       refid = self.attributes['refid']
@@ -1030,33 +862,6 @@ module Asciidoctor
   end
 
   class Table
-    def old_tex_process
-      # # warn "This is Asciidoctor::Table, tex_process.  I don't know how to do that".yellow +  " (#{self.node_name})".magenta if $VERBOSE
-      # table = Table.new self.parent, self.attributes
-      n_rows = self.rows.body.count
-      n_columns = self.columns.count
-      alignment = (['c'] * n_columns).join('|')
-      output = "\\begin《center》\n"
-      output << "\\begin《tabular》《|#{alignment}|》\n"
-      output << "\\hline\n"
-      self.rows.body.each_with_index do |row, index|
-        row_array = []
-        row.each do |cell|
-          if Array === (cell_content = cell.content)
-            row_array << cell_content.join("\n")
-          else
-            row_array << cell_content
-          end
-        end
-        output << row_array.join(' & ')
-        output << " \\\\ \n"
-      end
-      output << "\\hline\n"
-      output << "\\end{tabular}\n"
-      output << "\\end{center}\n"
-      "#{output}"
-    end
-
     def get_cell_content(the_cell)
       
       if Array === the_cell.content
@@ -1290,101 +1095,6 @@ module Asciidoctor
       output << "\\end{center}\n"
       "#{output}"
       #-------------------------------------------------------------------------
-    end
-  end
-
-
-
-
-
-
-
-  class OldTable
-    def tex_process
-      # # warn "This is Asciidoctor::Table, tex_process.  I don't know how to do that".yellow +  " (#{self.node_name})".magenta if $VERBOSE
-      # table = Table.new self.parent, self.attributes
-      n_rows = self.rows.body.count
-      n_columns = self.columns.count
-      alignment = (['c']*n_columns).join('|')
-      output = "\\begin《center》\n"
-      output << "\\begin《tabular》《|#{alignment}|》\n"
-      output << "\\hline\n"
-      self.rows.body.each_with_index do |row, index|
-        row_array = []
-        row.each do |cell|
-          if Array === (cell_content = cell.content)
-            row_array << cell_content.join("\n")
-          else
-            row_array << cell_content
-          end
-        end
-        output << row_array.join(' & ')
-        output << " \\\\ \n"
-      end
-      output << "\\hline\n"
-      output << "\\end{tabular}\n"
-      output << "\\end{center}\n"
-      "#{output}"
-    end
-  end
-
-
-  module LaTeX
-    # TeXPostProcess cleans up undesired transformations
-    # inside the TeX environment.  Strings
-    # &ampp;, &gt;, &lt; are mapped back to
-    # &, >, < and \\ is conserved.
-    module TeXPostProcess
-
-      def self.match_inline str
-        rx_tex_inline = /\$(.*?)\$/
-        str.scan rx_tex_inline
-      end
-
-      def self.match_block str
-        rx_tex_block = /\\\[(.*?)\\\]/m
-        str.scan rx_tex_block
-      end
-
-      def self.make_substitutions1 str
-        str = str.gsub("&amp;", "&")
-        str = str.gsub("&gt;", ">")
-        str = str.gsub("&lt;", "<")
-      end
-
-      def self.make_substitutions_in_matches matches, str
-        matches.each do |m|
-          m_str = m[0]
-          m_transformed = make_substitutions1 m_str
-          str = str.gsub(m_str,m_transformed)
-        end
-        str
-      end
-
-      # (1) & (2) are needed together to protect \\
-      # inside of matrices, etc.
-      def self.make_substitutions str
-        str = str.gsub('\\\\', '@@')   # (1)
-        matches = match_inline str
-        if matches.count > 0
-          str = make_substitutions_in_matches matches, str
-        end
-        matches = match_block str
-        if matches.count > 0
-          str = make_substitutions_in_matches matches, str
-        end
-        str = str.tr('@','\\')         # (2)
-        str
-      end
-
-      def self.stem_substitutions str
-        str = str.gsub('\\\\', '@@')   # (1)
-        str = make_substitutions1 str
-        str = str.tr('@','\\')         # (2)
-        str
-      end
-
-
     end
   end
 end
