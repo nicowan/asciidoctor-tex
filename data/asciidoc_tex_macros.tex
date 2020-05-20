@@ -1,7 +1,19 @@
 % Needed for Asciidoc
 
-\newcommand{\rolered}[1]{ \textcolor{red}{#1} }
-\newcommand{\roleblue}[1]{ \textcolor{blue}{#1} }
+%
+% Commands for colored inline text also used to color an entire paragraph
+%
+\newcommand{\colorRed}[1]   {\textcolor{red}{#1}   }
+\newcommand{\colorBlue}[1]  {\textcolor{blue}{#1}  }
+\newcommand{\colorGreen}[1] {\textcolor{green}{#1} }
+\newcommand{\colorYellow}[1]{\textcolor{yellow}{#1}}
+
+%
+% Create a title for a paragraph (or other?) blocks
+%
+\newcommand{\blockTitle}[1]{%
+  \textbf{\textcolor{black!50!white}{#1}}\newline%
+}
 
 
 
