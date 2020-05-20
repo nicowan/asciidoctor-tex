@@ -7,4 +7,4 @@ exemple.pdf: exemple.tex images/*
 clean:
 	rm -f *.aux *.bcf *.fls *.idx *.ind *.lof *.lot *.out \
 		  *.toc *.fdb_latexmk *.log *synctex.gz newEnvironments.tex
-	rm -Rf _minted-exemple
+	rm -Rf _minted-*
