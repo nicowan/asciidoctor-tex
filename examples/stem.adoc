@@ -1,0 +1,17 @@
+// LatexMath bloc
+
+Nisi esse cupidatat culpa incididunt ipsum. Enim elit aute est labore elit. Ut ad dolor nulla proident consectetur elit irure eiusmod. Sit et amet proident ipsum ut minim. Ut laborum nisi exercitation minim pariatur ad sint eu. Sit proident excepteur minim laborum nisi in ad officia esse enim. Culpa ad Lorem veniam veniam aliqua proident esse.
+
+[stem] 
+++++ 
+x = \frac{2 \cdot y}{3}
+++++
+
+Nisi esse cupidatat culpa incididunt ipsum. Enim elit aute est labore elit. Ut ad dolor nulla proident consectetur elit irure eiusmod.
+
+[stem] 
+++++ 
+x^2 = \sin( \alpha \cdot \frac{2}{3} )
+++++
+
+

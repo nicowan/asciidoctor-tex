@@ -1,0 +1,42 @@
+// Admonition
+
+TIP: This is a tip $_$
+and it continue here
+
+NOTE: This is a note $_$
+
+CAUTION: this is a caution $_$
+
+IMPORTANT: this is important $_$
+
+WARNING: this is a warning $_$
+
+
+
+[TIP]
+====
+This is a tip $_$
+====
+
+[NOTE]
+====
+This is a note $_$
+====
+
+[CAUTION]
+====
+this is a caution $_$
+====
+
+[IMPORTANT]
+====
+this is important $_$
+====
+
+[WARNING]
+====
+this is a warning $_$
+====
+
+    
+

@@ -39,12 +39,12 @@ module TexUtilities
 
   def self.env(env, *args)
     body = args.pop
-    "#{self.begin(env)}#{braces *args}\n#{body}\n#{self.end(env)}\n"
+    "\n#{self.begin(env)}#{braces *args}\n#{body}\n#{self.end(env)}\n"
   end
 
   def self.env_opt(env, opt, *args)
     body = args.pop
-    "#{self.begin(env)}〈#{opt}〉#{braces *args}\n#{body}\n#{self.end(env)}\n"
+    "\n#{self.begin(env)}〈#{opt}〉#{braces *args}\n#{body}\n#{self.end(env)}\n"
   end
 
   # normalize the name because it is an id
@@ -210,6 +210,46 @@ module Process
     return result
   end
 
+  def self.ulist(node)
+    return $tex.env("itemize", self.listItems(node))
+  end
+
+  def self.olist(node)
+    return $tex.env("itemize", self.listItems(node))
+  end
+
+  def self.dlist(node)
+    result = ""
+    node.items.each do |terms, item|
+      content = ""
+      content << $tex.escape(item.text)    if item.text?
+      content << $tex.escape(item.content) if item.blocks?
+      result  << $tex.macro_opt("item", terms.map { |one| one.text }.join("")) + "\n#{content}\n"
+    end
+    result.strip!
+    return $tex.env("description", result)
+  end
+
+  def self.stem(node)
+    return "\n\\[#{node.content}\\]\n"
+  end
+
+  def self.admonition(node)
+    # Block contents are already escaped, inline contents not
+    content = node.blocks? ? node.content : $tex.escape(node.content)
+    content.strip!
+    return $tex.env("admonition", node.style, content)
+  end
+
+
+
+
+  def self.pageBreak(node)
+    return "\n#{$tex.macro('newpage')}\n"
+  end
+
+
+
 
 
   # ---------------------------------------------------------------------------
@@ -342,6 +382,18 @@ module Process
     result << File.open(fileName, 'r') { |f| f.read }
   end
 
+  def self.listItems(node)
+    result = ""
+    node.content.each do |item|
+      content =  $tex.escape(item.text)    if item.text?
+      content << $tex.escape(item.content) if item.blocks?
+      content.strip!
+      result  << "#{$tex.macro("item")} #{content} \n"
+    end
+    result.strip!
+    return result
+  end
+
 end # module Process
 
 
@@ -361,69 +413,6 @@ module Asciidoctor
   $tex = TexUtilities
 
 
-
-
-  # Write TeX \itemize or \enumerate lists
-  # for ulist and olist.  Recurses for
-  # nested lists.
-  class List
-
-    def tex_process
-      case self.node_name
-      when 'dlist'
-        dlist_process
-      when 'ulist'
-        ulist_process
-      when 'olist'
-        olist_process
-      else
-        # warn "This Asciidoctor::List, tex_process.  I don't know how to do that (#{self.node_name})" if $VERBOSE
-      end
-    end
-
-    def item(term, dd)
-      if term != ""
-        result = $tex.macro_opt("item", term) + "\n"
-      else
-        result = $tex.macro("item") + "\n"
-      end
-
-      # Generate the item and its content
-      if dd
-        result << $tex.escape(dd.text)    if dd.text?
-        result << $tex.escape(dd.content) if dd.blocks?
-        result << "\n"
-      end
-      return result
-    end
-
-    def dlist_process
-      result = $tex.begin("description") + "\n"
-      self.items.each do |terms, item|
-        # terms.map{}.join generate a string from all terms text
-        result << self.item(terms.map { |one| one.text }.join(""), item)
-      end
-      result << $tex.end("description")
-    end
-
-    def ulist_process
-      result = $tex.begin("itemize") + "\n"
-      self.content.each do |item|
-        result << self.item("", item)
-      end
-      result << $tex.end("itemize")
-    end
-
-    def olist_process
-      result = $tex.begin("enumerate") + "\n"
-      self.content.each do |item|
-        result << self.item("", item)
-      end
-      result << $tex.end("enumerate")
-    end
-
-  end
-
   # Proces block elements of varios kinds
   class Block
 
@@ -432,12 +421,9 @@ module Asciidoctor
 
     def tex_process
       case self.blockname
-      when :stem
-        stem_process
-      when :admonition
-        admonition_process
-      when :page_break
-        page_break_process
+
+
+
       when :literal
         self.literal_process
       when :pass
@@ -466,23 +452,7 @@ module Asciidoctor
       end
     end
 
-    def stem_process
-      # Seems to work
-      return "\\[#{self.content}\\]"
-    end
 
-    def admonition_process
-      content = self.content
-      # Sometimes the admonition block is already escaped this one avoid doing it twice
-      content = $tex.escape(content) if self.lines.length == 1
-      result  = $tex.macro("begin", "admonition", self.style) + "\n"
-      result << content + "\n"
-      result << $tex.macro("end", "admonition") + "\n"
-    end
-
-    def page_break_process
-      "\n\\vfill\\eject\n"
-    end
 
     def literal_process
       heading = ''

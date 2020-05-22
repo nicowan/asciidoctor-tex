@@ -1,0 +1,34 @@
+// Simple definition list
+
+Computer::
+    Stupid electronic device that pretend to be smart
+
+Smart Phone::
+    Stupid phone that pretend to be computer
+
+// Simple unordered list
+
+* aaa
+* bbb
+* ccc
+
+// Simple ordered list
+
+. aaa
+. bbb
+. ccc
+
+// Muti-level list
+
+*     first  level point 1
+**    second level
+***   third  level
+****  fourth level
+***** fifth  level
+*     first  level point 2
+..    second level
+...   third  level
+....  fourth level
+..... fifth  level
+* ccc
+

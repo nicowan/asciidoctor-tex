@@ -88,24 +88,26 @@ module Asciidoctor
           when 'section';             Process.section(node)
           when 'paragraph';           Process.paragraph(node)
           when 'listing';             Process.listing(node)
+          when 'ulist';               Process.ulist(node)
+          when 'olist';               Process.olist(node)
+          when 'dlist';               Process.dlist(node)
+          when 'page_break';          Process.pageBreak(node)
+          when 'admonition';          Process.admonition(node)
+          when 'stem';                Process.stem(node)
+  
 
+            
           # Inline -----------------------------------------------------
           when 'inline_quoted';       Process.inlineQuoted(node)
 
 
-        when 'dlist';               node.tex_process  # OK
-        when 'olist';               node.tex_process  # OK
-        when 'ulist';               node.tex_process  # OK
 
         when 'inline_anchor';       node.tex_process  # 
         when 'inline_break';        node.tex_process  # 
         when 'inline_footnote';     node.tex_process  # 
         when 'inline_callout';      node.tex_process  # 
         when 'inline_indexterm';    node.tex_process  # 
-        when 'admonition';          node.tex_process  # OK
         when 'literal';             node.tex_process  # 
-        when 'page_break';          node.tex_process  # 
-        when 'stem';                node.tex_process  # 
         when 'pass';                node.tex_process  # 
         when 'open';                node.tex_process  # 
         when 'quote';               node.tex_process  # 

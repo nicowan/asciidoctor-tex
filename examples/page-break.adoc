@@ -1,0 +1,7 @@
+// Simple paragraph with simple text
+SIMPLE PARAGRAPH : Pariatur est officia consequat velit. Do pariatur commodo laboris proident pariatur in magna nostrud Lorem in incididunt aliqua. Esse incididunt aliqua cillum ad. Voluptate ad sunt proident consequat culpa laborum incididunt excepteur.
+
+<<<
+
+// Simple paragraph with simple text
+SIMPLE PARAGRAPH : Pariatur est officia consequat velit. Do pariatur commodo laboris proident pariatur in magna nostrud Lorem in incididunt aliqua. Esse incididunt aliqua cillum ad. Voluptate ad sunt proident consequat culpa laborum incididunt excepteur.
