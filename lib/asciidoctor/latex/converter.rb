@@ -94,13 +94,12 @@ module Asciidoctor
           when 'page_break';          Process.pageBreak(node)
           when 'admonition';          Process.admonition(node)
           when 'stem';                Process.stem(node)
-  
+          when 'image';               Process.blockImage(node)
 
             
           # Inline -----------------------------------------------------
           when 'inline_quoted';       Process.inlineQuoted(node)
-
-
+          when 'inline_image';        Process.inlineImage(node)
 
         when 'inline_anchor';       node.tex_process  # 
         when 'inline_break';        node.tex_process  # 
@@ -113,7 +112,6 @@ module Asciidoctor
         when 'quote';               node.tex_process  # 
         when 'example';             node.tex_process  # 
         when 'floating_title';      node.tex_process  # 
-        when 'image';               node.tex_process  # 
         when 'preamble';            node.tex_process  # 
         when 'sidebar';             node.tex_process  # 
         when 'verse';               node.tex_process  # 
@@ -123,7 +121,7 @@ module Asciidoctor
         when 'colist';              warn "#{node.node_name} is not implemented"
         when 'embedded';            warn "#{node.node_name} is not implemented"
         when 'inline_button';       warn "#{node.node_name} is not implemented"
-        when 'inline_image';        node.tex_process
+        
         when 'inline_kbd';          warn "#{node.node_name} is not implemented"
         when 'inline_menu';         warn "#{node.node_name} is not implemented"
         when 'video';               warn "#{node.node_name} is not implemented"

@@ -1,0 +1,20 @@
+:imagesdir: images
+
+// Full width block image
+image::pyramide.png[]
+
+// Full width block image
+image::pyramide.png[]
+
+// Block image width specified as percent
+image::pyramide.png[width=45%]
+
+// Block image width specified as mm
+image::pyramide.png[width=100mm]
+
+// Block image with a title
+.A beautifully pyramid
+image::pyramide.png[]
+
+
+Ea in sunt Lorem deserunt amet ullamco. Non fugiat dolor cillum laboris fugiat. Ea mollit dolor image:cc-by-nc-sa.jpg[width=10%] eiusmod duis non aute ad fugiat in dolor adipisicing. Tempor ut proident adipisicing exercitation pariatur laborum fugiat enim irure Lorem excepteur.

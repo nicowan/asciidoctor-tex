@@ -230,6 +230,10 @@ module Process
     return $tex.env("description", result)
   end
 
+  def self.pageBreak(node)
+    return "\n#{$tex.macro('newpage')}\n"
+  end
+
   def self.stem(node)
     return "\n\\[#{node.content}\\]\n"
   end
@@ -241,13 +245,22 @@ module Process
     return $tex.env("admonition", node.style, content)
   end
 
+  def self.blockImage(node)
+    # TODO: Manage alignment left, right, center
+    # TODO: Manage text flow (WrapFigure)
+    result = ""
 
+    if node.title
+      result  = $tex.macro("centering")
+      result << "#{self.includeGraphics(node)}\n"
+      result << "#{$tex.macro("caption", node.title)}"
+      result =  $tex.env_opt("figure", "ht", result)
+    else
+      result =  $tex.env("center", self.includeGraphics(node))
+    end
 
-
-  def self.pageBreak(node)
-    return "\n#{$tex.macro('newpage')}\n"
+    return result
   end
-
 
 
 
@@ -324,8 +337,9 @@ module Process
     return result
   end
 
-
-
+  def self.inlineImage(node)
+    return self.includeGraphics(node)
+  end
 
 
 
@@ -394,6 +408,38 @@ module Process
     return result
   end
 
+  def self.getImageWidth(node)
+    if node.attributes['width']
+      width = node.attributes['width']
+      if width.include?("mm")
+        width = "#{width.to_f}mm"
+      elsif width.include?("cm")
+        width = "#{width.to_f}cm"
+      elsif width.include?("in")
+        width = "#{width.to_f}in"
+      elsif width.include?("%")
+        width = "#{width.to_f/100}\\textwidth"
+      else
+        width = '\textwidth'
+      end
+    else
+      width = '\textwidth'
+    end
+    return width
+  end
+
+  def self.getImageFile(node)
+    filename = node.attributes['target']
+    filename = node.target if filename == nil
+    return node.image_uri(filename)
+  end
+
+  def self.includeGraphics(node)
+    width = getImageWidth(node)
+    filename = getImageFile(node)
+    return $tex.macro_opt("includegraphics", "width=#{width}", filename)
+  end
+
 end # module Process
 
 
@@ -436,8 +482,6 @@ module Asciidoctor
         self.example_process
       when :floating_title
         self.floating_title_process
-      when :image
-        self.image_process
       when :preamble
         self.preamble_process
       when :sidebar
@@ -598,78 +642,6 @@ module Asciidoctor
       "\\#{tagname}*《#{self.title}》\n\n#{self.content}\n\n"
     end
 
-    def image_process
-      if self.attributes['width']
-        width = self.attributes['width']
-        if    width.include?("mm")
-          width = "#{width.to_f}mm"
-        elsif width.include?("cm")
-          width = "#{width.to_f}cm"
-        elsif width.include?("in")
-          width = "#{width.to_f}in"
-        elsif width.include?("%")
-          width = "#{width.to_f/100}\\textwidth"
-        else
-          width = '\textwidth'
-        end
-      else
-        width = '\textwidth'
-      end
-      raw_image = self.attributes['target']
-      unless (imagesdir = document.attr 'imagesdir').nil_or_empty?
-        raw_image = ::File.join imagesdir, raw_image
-      end
-      if document.attributes['noteshare'] == 'yes'
-        image_rx = /image.*original\/(.*)\?/
-        match_data = raw_image.match image_rx
-        if match_data
-          image = match_data[1]
-        else
-          image = "undefined"
-        end
-      else
-        image = raw_image
-      end
-      if self.title?
-        caption = "\\caption《#{self.title}》"
-      else
-        caption = ''
-      end
-      refs = self.parent.document.references  # [:ids]
-      if self.attributes['align'] == 'center'
-        align = '\\centering'
-      else
-        align = ''
-      end
-      float = self.attributes['float']
-      if float
-        figure_type = 'wrapfigure'
-        ftext_width = width # '0.45\\textwidth'
-        caption=''
-      else
-        figure_type = 'figure'
-        ftext_width = ''
-      end
-      case float
-      when 'left'
-        position = '{l}'
-      when 'right'
-        position = '{r}'
-      else
-        position = '[h]'
-      end
-      # pos_option = "#{figure_type}}#{position}"
-      # incl_graphics = $tex.macro_opt, "width=#{width}", image
-      # $tex.env figure_type, "#{pos_option}\{#{ftext_width}\}", incl_graphics,
-      #\n\\includegraphics[width=#{width}]{#{image}}\n#{caption}\n#{align}"
-      "\\begin{#{figure_type}}#{position}《#{ftext_width}》\n\\centering\\includegraphics〈width=#{width}〉{#{image}}\n#{caption}\n#{align}\n\\end{#{figure_type}}\n"
-    end
-
-
-
-
-
-
     def preamble_process
       # "\\begin《preamble》\n%% HO HO HO!\n#{self.content}\n\\end《preamble》\n"
       self.content
@@ -723,60 +695,9 @@ module Asciidoctor
       when 'inline_indexterm'
         self.inline_indexterm_process
 
-      when 'inline_image'
-        self.inline_image
       else
         self.text
       end
-    end
-
-    # NICOLAS
-    def inline_image
-
-      if self.attributes['width']
-        width = self.attributes['width']
-      elsif self.attributes['pdfwidth']
-        width = self.attributes['pdfwidth']
-      end
-
-      if width
-        if    width.include?("mm")
-          width = "#{width.to_f}mm"
-        elsif width.include?("cm")
-          width = "#{width.to_f}cm"
-        elsif width.include?("in")
-          width = "#{width.to_f}in"
-        elsif width.include?("%")
-          width = "#{width.to_f/100}\\textwidth"
-        else
-          width = '\textwidth'
-        end
-      else
-        width = '\textwidth'
-      end
-
-      raw_image = self.target  #self.attributes['target']
-      if raw_image.nil_or_empty?
-        puts "raw_image is nil"
-      else
-        unless (imagesdir = document.attr 'imagesdir').nil_or_empty?
-          raw_image = ::File.join imagesdir, raw_image
-        end  
-      end
-
-      if document.attributes['noteshare'] == 'yes'
-        image_rx = /image.*original\/(.*)\?/
-        match_data = raw_image.match image_rx
-        if match_data
-          image = match_data[1]
-        else
-          image = "undefined"
-        end
-      else
-        image = raw_image
-      end
-
-      " \\includegraphics〈width=#{width}〉《#{self.image_uri self.target}》 "
     end
 
     def inline_anchor_process
