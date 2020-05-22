@@ -1,0 +1,40 @@
+// Literal content by indentation
+ THIS IS A LITERAL BLOCK
+ SECONDE LINE
+ THIRD LINE
+
+// Literal block with delimiter
+[#TotoDuChnoc]
+.Literal block with title
+....
+This is a literal block with delimiters
+
+
+
+The last line
+....
+
+[quote]
+____
+Quotation without title and attribution
+____
+
+.This is the quotatation's title
+[quote]
+____
+Quotation with title but without attribution
+____
+
+.This is the quotatation's title
+[quote, Arthur Conan Doyle]
+____
+Quotation with title and attribution
+____
+
+The paragraph that follows the quotation
+
+// A pass block
+++++
+The passblock with a LaTeX command dotfill : \dotfill
+++++
+

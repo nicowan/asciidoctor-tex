@@ -87,7 +87,6 @@ module Asciidoctor
           when 'document';            Process.document(node)
           when 'section';             Process.section(node)
           when 'paragraph';           Process.paragraph(node)
-          when 'listing';             Process.listing(node)
           when 'ulist';               Process.ulist(node)
           when 'olist';               Process.olist(node)
           when 'dlist';               Process.dlist(node)
@@ -95,7 +94,11 @@ module Asciidoctor
           when 'admonition';          Process.admonition(node)
           when 'stem';                Process.stem(node)
           when 'image';               Process.blockImage(node)
-
+          when 'listing';             Process.listing(node)
+          when 'literal';             Process.literal(node)
+          when 'pass';                Process.pass(node)
+          when 'quote';               Process.quote(node)
+          when 'verse';               Process.verse(node)
             
           # Inline -----------------------------------------------------
           when 'inline_quoted';       Process.inlineQuoted(node)
@@ -106,15 +109,12 @@ module Asciidoctor
         when 'inline_footnote';     node.tex_process  # 
         when 'inline_callout';      node.tex_process  # 
         when 'inline_indexterm';    node.tex_process  # 
-        when 'literal';             node.tex_process  # 
-        when 'pass';                node.tex_process  # 
+        
         when 'open';                node.tex_process  # 
-        when 'quote';               node.tex_process  # 
         when 'example';             node.tex_process  # 
         when 'floating_title';      node.tex_process  # 
         when 'preamble';            node.tex_process  # 
         when 'sidebar';             node.tex_process  # 
-        when 'verse';               node.tex_process  # 
         when 'toc';                 node.tex_process  # 
         when 'table';               node.tex_process  # 
         when 'thematic_break';      warn "#{node.node_name} is not implemented"

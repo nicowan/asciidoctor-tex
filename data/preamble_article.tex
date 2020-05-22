@@ -129,5 +129,20 @@
 \end{mdframed}    
 }
 
+% Put a border around verbatim environments and adapt vertical spacing
+\BeforeBeginEnvironment{verbatim}{%
+    \vspace{-1\baselineskip}
+    \begin{mdframed}%
+    [linecolor=gray!50, backgroundcolor=gray!5!white, roundcorner=5pt]
+    %[linecolor=gray!50, backgroundcolor=gray!5!black, roundcorner=5pt]
+}
+
+\AfterEndEnvironment{verbatim}{%
+    \end{mdframed}%
+    %\vspace{-1\baselineskip}
+}
+
+
+
 % Package to create our own environments
 \usepackage{environ}

@@ -187,29 +187,6 @@ module Process
     return "#{title}#{content}\n\n"
   end
 
-  def self.listing(node)
-    # TODO: linenos, linenumbers
-    # TODO: only include the needed converter
-    # TODO: translate language names between converters
-    result = ""
-    language = node.attributes['language']
-    language = "text" if language == nil or language == ""
-
-    case node.document.attributes['source-highlighter']
-      when "pygment"
-        result << $tex.env("minted", language, node.content)
-  
-      when "lstlisting"
-        options = "frame = single, language=#{language}"
-        result << $tex.env_opt("lstlisting", options, node.content)
-
-      else
-        result << $tex.env("verbatim", node.content)
-    end
-
-    return result
-  end
-
   def self.ulist(node)
     return $tex.env("itemize", self.listItems(node))
   end
@@ -262,6 +239,62 @@ module Process
     return result
   end
 
+  def self.listing(node)
+    # TODO: linenos, linenumbers
+    # TODO: only include the needed converter
+    # TODO: translate language names between converters
+    result = ""
+    language = node.attributes['language']
+    language = "text" if language == nil or language == ""
+
+    case node.document.attributes['source-highlighter']
+      when "pygment"
+        result << $tex.env("minted", language, node.content)
+  
+      when "lstlisting"
+        options = "frame = single, language=#{language}"
+        result << $tex.env_opt("lstlisting", options, node.content)
+
+      else
+        result << $tex.env("verbatim", node.content)
+    end
+
+    return result
+  end
+
+  def self.literal(node)
+    if node.title
+      result = $tex.macro("blockTitle", node.title)
+      if node.id
+        result = $tex.hypertarget(node.id, result)
+      end
+    else
+      result = ""
+    end
+    result << $tex.env("verbatim", node.content)
+  end
+
+  def self.quote(node)
+    # TODO: Create asciidocQuote environment which takes 2 args <title> and <cite>
+    #       and process the stuff on the LaTeX side because the aquote, tquote and
+    #       quotation environments gives bad results
+    title = ""
+    title = $tex.macro('blockTitle', node.attr('title')) if node.attr?('title')
+
+    if node.attr('attribution')
+      $tex.env('aquote', node.attr('attribution'), "#{title} \\\\", node.content)
+
+    elsif title != ""
+      $tex.env('tquote', title, node.content)
+    else
+      $tex.env('quotation', node.content)
+    end
+  end
+
+  def self.pass(node)
+    puts "pass block"
+    node.content
+  end
 
 
 
@@ -469,13 +502,6 @@ module Asciidoctor
       case self.blockname
 
 
-
-      when :literal
-        self.literal_process
-      when :pass
-        self.pass_process
-      when :quote
-        self.quote_process
       when :open
         self.open_process
       when :example
@@ -496,41 +522,6 @@ module Asciidoctor
       end
     end
 
-
-
-    def literal_process
-      heading = ''
-      if id and self.title
-        heading = $tex.hypertarget id, self.title
-      elsif self.title
-        heading = self.title
-      end
-      if heading == ''
-        $tex.env 'verbatim', self.content
-      else
-        output = $tex.region 'bf', heading
-        output << "\\vspace《-1\\baselineskip》\n"
-        output << ($tex.env 'verbatim', self.content)
-      end
-    end
-
-    def pass_process
-      self.content
-    end
-
-    def quote_process
-      if self.attr? 'attribution'
-        attribution = self.attr 'attribution'
-        citetitle = (self.attr? 'citetitle') ? (self.attr 'citetitle') : nil
-        # citetitle = citetitle ? ' - ' + citetitle : ''
-        citetitle = citetitle ? $tex.region('bf', citetitle) + ' \\\\' : ''
-        $tex.env 'aquote', attribution, citetitle, self.content
-      elsif self.title
-        $tex.env 'tquote', self.title, self.content
-      else
-        $tex.env 'quotation', self.content
-      end
-    end
 
 
 
