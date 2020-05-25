@@ -31,6 +31,16 @@ ____
 Quotation with title and attribution
 ____
 
+.This is the verse's title
+[verse, Someone with a given name]
+____
+First line of the verse
+Second line
+and finally third line
+____
+
+
+
 The paragraph that follows the quotation
 
 // A pass block

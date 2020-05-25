@@ -168,12 +168,13 @@ module Process
     # Paragraph title
     title   = ""
     if node.title?
-      title = $tex.macro("blockTitle", $tex.escape(node.title)) + "\n"
+      title = $tex.macro("adocMacroTitle", $tex.escape(node.title)) + "\n"
     end
 
     # Paragraph content with colorization
     color   = getColor(node.role)
     content = $tex.escape(node.content)
+    content.strip!
     if color != ""
       content = $tex.macro($colors[color], content)
     end
@@ -219,7 +220,7 @@ module Process
     # Block contents are already escaped, inline contents not
     content = node.blocks? ? node.content : $tex.escape(node.content)
     content.strip!
-    return $tex.env("admonition", node.style, content)
+    return $tex.env("adocEnvAdmonition", node.style, content)
   end
 
   def self.blockImage(node)
@@ -264,7 +265,7 @@ module Process
 
   def self.literal(node)
     if node.title
-      result = $tex.macro("blockTitle", node.title)
+      result = $tex.macro("adocMacroTitle", node.title)
       if node.id
         result = $tex.hypertarget(node.id, result)
       end
@@ -275,21 +276,21 @@ module Process
   end
 
   def self.quote(node)
-    # TODO: Create asciidocQuote environment which takes 2 args <title> and <cite>
-    #       and process the stuff on the LaTeX side because the aquote, tquote and
-    #       quotation environments gives bad results
-    title = ""
-    title = $tex.macro('blockTitle', node.attr('title')) if node.attr?('title')
-
-    if node.attr('attribution')
-      $tex.env('aquote', node.attr('attribution'), "#{title} \\\\", node.content)
-
-    elsif title != ""
-      $tex.env('tquote', title, node.content)
-    else
-      $tex.env('quotation', node.content)
-    end
+    # TODO: Split attribution using coma
+    content = node.content
+    content.strip!
+    return $tex.env('adocEnvQuote', node.attr('title'), node.attr('attribution'), content)
   end
+
+  def self.verse(node)
+    # TODO: Split attribution using coma
+    content = node.content
+    content.strip!
+    content = content.gsub("\n", "\n\n")
+    return $tex.env('adocEnvVerse', node.attr('title'), node.attr('attribution'), content)
+  end
+
+
 
   def self.pass(node)
     puts "pass block"
@@ -512,8 +513,6 @@ module Asciidoctor
         self.preamble_process
       when :sidebar
         self.sidebar_process
-      when :verse
-        self.verse_process
       when :toc
         self.toc_process
       else
@@ -654,11 +653,6 @@ module Asciidoctor
       else
         $tex.env 'sidebar', content
       end
-    end
-
-    def verse_process
-      # $tex.env 'alltt', self.content
-      $tex.env 'verse', self.content
     end
 
   end # class Block
