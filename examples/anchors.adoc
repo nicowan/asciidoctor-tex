@@ -1,0 +1,33 @@
+Click here to go to link:du_grand_pas_juste[vers la marque A]
+
+Click here to go to link:bookmark-b[vers la marque B]
+
+Click here to go to link:bookmark-c[vers la marque C]
+
+Click here to go to https://google.ch[Google]
+
+
+<<<
+
+// Defining an inline anchor
+[[du_grand_pas_juste]]This is the target line
+
+Veniam magna ad eu quis cillum ipsum proident. Ullamco veniam dolor quis in consectetur veniam. Est id eiusmod ex elit aliquip enim officia adipisicing. Cillum dolor incididunt ullamco ex veniam anim et non fugiat est labore ad dolor. Qui eu eiusmod deserunt dolor ut fugiat cillum veniam.
+
+[[bookmark-b]]
+Veniam magna ad eu quis cillum ipsum proident. Ullamco veniam dolor quis in consectetur veniam. Est id eiusmod ex elit aliquip enim officia adipisicing. Cillum dolor incididunt ullamco ex veniam anim et non fugiat est labore ad dolor. Qui eu eiusmod deserunt dolor ut fugiat cillum veniam.
+
+// Defining an inline anchor using shorthand syntax
+
+Veniam magna ad eu quis cillum ipsum proident. Ullamco veniam dolor quis in consectetur veniam. Est id eiusmod ex elit aliquip enim officia adipisicing. Cillum dolor incididunt ullamco ex veniam anim et non fugiat est labore ad dolor. Qui eu eiusmod deserunt dolor ut fugiat cillum veniam.
+
+Veniam magna ad eu quis cillum ipsum proident. Ullamco veniam dolor quis in consectetur veniam. Est id eiusmod ex elit aliquip enim officia adipisicing. Cillum dolor incididunt ullamco ex veniam anim et non fugiat est labore ad dolor. Qui eu eiusmod deserunt dolor ut fugiat cillum veniam.
+
+// Defining an inline anchor on a list item
+* Fist item
+* [[bookmark-c]]Second item
+* Third item
+
+
+
+

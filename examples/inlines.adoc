@@ -1,0 +1,25 @@
+:experimental: 1
+
+// Keyboard shortcut
+example kbd:[F11] Toggle fullscreen
+
+example kbd:[Ctrl+T] Open a new tab
+
+example kbd:[Ctrl+Shift+N] New incognito window
+
+//example kbd:[\ ] Used to escape characters
+
+//example kbd:[Ctrl+\]] Jump to keyword
+
+example kbd:[Ctrl + +] Increase zoom
+
+// Buttons
+Press the btn:[OK] button when you are finished.
+
+Select a file in the file navigator and click btn:[Open].
+
+
+// Menus
+To save the file, select menu:File[Save].
+
+Select menu:View[Zoom > Reset] to reset the zoom level to the default setting.

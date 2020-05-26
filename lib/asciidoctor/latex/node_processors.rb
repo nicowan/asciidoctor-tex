@@ -54,9 +54,11 @@ module TexUtilities
      # text = text.rstrip.chomp
     end
     if name
-      "\\hypertarget《#{name.tex_normalize}》《#{text}》"
+      self.macro("hypertarget", name.tex_normalize, text)
+      #"\\hypertarget《#{name.tex_normalize}》《#{text}》"
     else
-      "\\hypertarget《'NO-ID'》《#{text}》"
+      self.macro("hypertarget", "no-id".tex_normalize, text)
+      #"\\hypertarget《'NO-ID'》《#{text}》"
       # FIXME: why do we need this branch?
     end
   end
@@ -71,6 +73,7 @@ module TexUtilities
     str = str.gsub("%",     "\\%")
     str = str.gsub("$",     "\\$")
     str = str.gsub("_",     "\\_")
+    #str = str.gsub("\\", "\\\\\\")  # Do not work, it duplicates \ in latex commands
     str = str.gsub("|",     "\\textbar{}")
     str = str.gsub("~",     "\\textasciitilde{}")
     str = str.gsub("^",     "\\textasciicircum{}")
@@ -185,7 +188,11 @@ module Process
       content = $tex.env($alignments[alignement], content)
     end
 
-    return "#{title}#{content}\n\n"
+    # Add an anchor if an id is given
+    anchor = ""
+    anchor = $tex.macro('hypertarget', node.id, "") if node.id
+
+    return "#{anchor}#{title}#{content}\n\n"
   end
 
   def self.ulist(node)
@@ -374,6 +381,81 @@ module Process
   def self.inlineImage(node)
     return self.includeGraphics(node)
   end
+  
+  def self.inlineAnchor(node)
+    case node.type
+      when :xref
+        # Not sure I will implement this in the LaTeX backend because for me
+        # it is useless to link to title with the title content what hapens when 
+        # the title text changes???
+        $tex.macro('hyperlink', node.target.tex_normalize, node.text || node.attributes['path'] || "")
+
+      when :link
+        target = node.target
+        # TODO Improve the external URL detection
+        if target.include? "http:" or target.include? "https:"
+          $tex.macro('href', target, node.text)
+        else
+          $tex.macro('hyperlink', node.target.tex_normalize, node.text)
+        end
+
+      when :ref
+        $tex.hypertarget(node.id, "")
+
+      when :bibref
+        $tex.hypertarget(node.id, (node.reftext || node.id))
+
+      else
+        warn %(unknown anchor type: #{node.type.inspect})
+        nil
+    end
+  end
+
+  def self.inlineBreak(node)
+    # Forces line break in a paragraph
+    "#{node.text} \\\\"
+  end
+
+  def self.inlineFootNote(node)
+    $tex.macro('footnote', self.text)
+  end
+
+  def self.inlineIndexTerm(node)
+    case self.type
+      when :visible
+        return "#{$tex.macro('index', node.text)}#{node.text}"
+      else
+        return "#{$tex.macro('index', self.attributes['terms'].join('!'))}"
+      end
+  end
+
+  def self.inlineButton(node)
+    return $tex.macro("adocMacroBtn", $tex.escape(node.text))
+  end
+
+  def self.inlineKeyboard(node)
+    separator = " + "
+    items = []
+    node.attr('keys').each { |one|
+      items.push($tex.macro("adocMacroKbd", $tex.escape(one)))
+    }
+    return items.join(" #{separator} ")
+  end
+
+  def self.inlineMenu(node)
+    # Needs to define the macro adocMacroNextItem with the 
+    # symbol that is used to show the next item in the menu
+    separator = $tex.macro("adocMacroNextItem")
+    items = []
+
+    items.push($tex.macro("adocMacroMenu", node.attr('menu')))
+    node.attr('submenus').each { |one|
+      items.push($tex.macro("adocMacroMenu", one))
+    }
+    items.push($tex.macro("adocMacroMenu", node.attr('menuitem')))
+
+    return items.join(" #{separator} ")
+  end
 
 
 
@@ -473,15 +555,7 @@ module Process
     filename = getImageFile(node)
     return $tex.macro_opt("includegraphics", "width=#{width}", filename)
   end
-
 end # module Process
-
-
-
-
-
-
-
 
 
 # Yuuk!, The classes in node_processor implement the
@@ -491,7 +565,6 @@ module Asciidoctor
 
   include TexUtilities
   $tex = TexUtilities
-
 
   # Proces block elements of varios kinds
   class Block
@@ -656,86 +729,6 @@ module Asciidoctor
     end
 
   end # class Block
-
-  # Process inline elements
-  class Inline
-
-    def tex_process
-      case self.node_name
-      #when 'inline_quoted'
-      #  self.inline_quoted_process
-
-      when 'inline_anchor'
-        self.inline_anchor_process
-
-      when 'inline_break'
-        self.inline_break_process
-
-      when 'inline_footnote'
-        self.inline_footnote_process
-
-      when 'inline_callout'
-        self.inline_callout_process
-
-      when 'inline_indexterm'
-        self.inline_indexterm_process
-
-      else
-        self.text
-      end
-    end
-
-    def inline_anchor_process
-
-      refid = self.attributes['refid']
-      refs = self.parent.document.references[:ids]
-      # FIXME: the next line is HACKISH (and it crashes the app when refs[refid]) is nil)
-      # FIXME: and with the fix for nil results is even more hackish
-      # if refs[refid]
-      if !self.text && refs[refid]
-        reftext = refs[refid].gsub('.', '')
-        m = reftext.match /(\d*)/
-        if m[1] == reftext
-          reftext = "(#{reftext})"
-        end
-      else
-        reftext = self.text
-      end
-      case self.type
-        when :link
-          $tex.macro 'href', self.target, self.text
-        when :ref
-          $tex.macro 'label', (self.id || self.target)
-        when :xref
-          $tex.macro 'hyperlink', refid.tex_normalize, reftext
-        else
-          # warn "!!".magenta if $VERBOSE
-      end
-    end
-
-    def inline_break_process
-      "#{self.text} \\\\"
-    end
-
-    def inline_footnote_process
-      $tex.macro 'footnote', self.text
-    end
-
-    def inline_callout_process
-      # warn "Please implement me! (inline_callout_process)".red if $VERBOSE
-    end
-
-    def inline_indexterm_process
-      case self.type
-      when :visible
-        output = $tex.macro 'index', self.text
-        output += self.text
-      else
-        $tex.macro 'index', self.attributes['terms'].join('!')
-      end
-    end
-
-  end
 
   class Table
     def get_cell_content(the_cell)

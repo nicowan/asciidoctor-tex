@@ -68,20 +68,6 @@ module Asciidoctor
 
       def convert node, transform = nil
 
-        #if defined?(node.type)
-        #  if defined?(node.text)
-        #    puts "#{node.node_name} / #{node.type} = #{node.text}"
-        #  else
-        #    puts "#{node.node_name} / #{node.type} = no text"
-        #  end
-        #else
-        #  if defined?(node.text)
-        #    puts "#{node.node_name} = #{node.text}"
-        #  else
-        #    puts "#{node.node_name} = no text"
-        #  end
-        #end
-
         case node.node_name
           # Block ------------------------------------------------------
           when 'document';            Process.document(node)
@@ -99,40 +85,37 @@ module Asciidoctor
           when 'pass';                Process.pass(node)
           when 'quote';               Process.quote(node)
           when 'verse';               Process.verse(node)
-            
+
+          # TODO : refactor
+          when 'open';                node.tex_process  # 
+          when 'example';             node.tex_process  # 
+          when 'floating_title';      node.tex_process  # 
+          when 'preamble';            node.tex_process  # 
+          when 'sidebar';             node.tex_process  # 
+          when 'toc';                 node.tex_process  # 
+          when 'table';               node.tex_process  # 
+          when 'thematic_break';      warn "#{node.node_name} is not implemented"
+          when 'colist';              warn "#{node.node_name} is not implemented"
+          when 'embedded';            warn "#{node.node_name} is not implemented"
+          when 'video';               warn "#{node.node_name} is not implemented"
+          when 'audio';               warn "#{node.node_name} is not implemented"
+
           # Inline -----------------------------------------------------
           when 'inline_quoted';       Process.inlineQuoted(node)
           when 'inline_image';        Process.inlineImage(node)
+          when 'inline_anchor';       Process.inlineAnchor(node)
+          when 'inline_break';        Process.inlineBreak(node)
+          when 'inline_footnote';     Process.inlineFootNote(node)
+          when 'inline_indexterm';    Process.inlineIndexTerm(node)
+          when 'inline_button';       Process.inlineButton(node)
+          when 'inline_kbd';          Process.inlineKeyboard(node)
+          when 'inline_menu';         Process.inlineMenu(node)
+          when 'inline_callout';      warn "#{node.node_name} is not implemented"
 
-        when 'inline_anchor';       node.tex_process  # 
-        when 'inline_break';        node.tex_process  # 
-        when 'inline_footnote';     node.tex_process  # 
-        when 'inline_callout';      node.tex_process  # 
-        when 'inline_indexterm';    node.tex_process  # 
-        
-        when 'open';                node.tex_process  # 
-        when 'example';             node.tex_process  # 
-        when 'floating_title';      node.tex_process  # 
-        when 'preamble';            node.tex_process  # 
-        when 'sidebar';             node.tex_process  # 
-        when 'toc';                 node.tex_process  # 
-        when 'table';               node.tex_process  # 
-        when 'thematic_break';      warn "#{node.node_name} is not implemented"
-        when 'colist';              warn "#{node.node_name} is not implemented"
-        when 'embedded';            warn "#{node.node_name} is not implemented"
-        when 'inline_button';       warn "#{node.node_name} is not implemented"
-        
-        when 'inline_kbd';          warn "#{node.node_name} is not implemented"
-        when 'inline_menu';         warn "#{node.node_name} is not implemented"
-        when 'video';               warn "#{node.node_name} is not implemented"
-        when 'audio';               warn "#{node.node_name} is not implemented"
-        else
-          warn %(Node to implement: #{node.node_name}, class = #{node.class}).magenta #if $VERBOSE
+          else
+            warn %(Node to implement: #{node.node_name}, class = #{node.class}).magenta #if $VERBOSE
         end
       end
     end # class Converter
-
-
-
   end # module Latex
 end # module Asciidoctor
