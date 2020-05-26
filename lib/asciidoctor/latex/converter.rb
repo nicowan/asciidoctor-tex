@@ -85,11 +85,11 @@ module Asciidoctor
           when 'pass';                Process.pass(node)
           when 'quote';               Process.quote(node)
           when 'verse';               Process.verse(node)
+          when 'floating_title';      Process.floatingTitle(node)
 
           # TODO : refactor
           when 'open';                node.tex_process  # 
           when 'example';             node.tex_process  # 
-          when 'floating_title';      node.tex_process  # 
           when 'preamble';            node.tex_process  # 
           when 'sidebar';             node.tex_process  # 
           when 'toc';                 node.tex_process  # 

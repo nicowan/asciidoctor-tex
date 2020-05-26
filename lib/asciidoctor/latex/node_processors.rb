@@ -140,27 +140,28 @@ module Process
   end
 
   def self.section(node)
-    # The section levels are different in book and article
-    tags = {
-      'article' => [ 'part', 'section', 'subsection', 'subsubsection', 'paragraph' ],
-      'book'    => [ 'part', 'chapter', 'section', 'subsection', 'subsubsection', 'paragraph' ]
-    }
+    tocentry = "";
 
     # Choose the section's level
-    section = tags[node.document.doctype][node.level]
+    section = $headings[node.document.doctype][node.level]
 
     # Fallback when the requested heading level does not exist
     if section == nil
-      section = tags[node.document.doctype][-1];
+      section = $headings[node.document.doctype][-1];
       warn "Latex #{node.document.doctype} does not support " +
            "heading level #{node.level}, uses #{section} instead".magenta
     end
 
-    # Add a star at the end when not numbered
-    section << (node.numbered ? '' : '*')
+    unless node.document.attributes["sectnums"]
+      # Add the entry in the table of content 
+      tocentry = $tex.macro("addcontentsline", "toc", section, $tex.escape(node.title)) + "\n"
+      # Add a star at the end when not numbered
+      section << "*" 
+    end
 
     # Generate the section's begin, content and end
     result  = $tex.macro(section, $tex.escape(node.title)) + "\n"
+    result << tocentry
     result << node.content
     #result << "% end #{section}\n"
 
@@ -297,12 +298,26 @@ module Process
     return $tex.env('adocEnvVerse', node.attr('title'), node.attr('attribution'), content)
   end
 
-
-
   def self.pass(node)
     puts "pass block"
     node.content
   end
+
+  def self.floatingTitle(node)
+    # Choose the section's level
+    section = $headings[node.document.doctype][node.level]
+
+    # Fallback when the requested heading level does not exist
+    if section == nil
+      section = $headings[node.document.doctype][-1];
+      warn "Latex #{node.document.doctype} does not support " +
+           "heading level #{node.level}, uses #{section} instead".magenta
+    end
+    section << "*" 
+    result  = $tex.macro(section, $tex.escape(node.title)) + "\n"
+    return result
+  end
+
 
 
 
@@ -421,11 +436,11 @@ module Process
   end
 
   def self.inlineIndexTerm(node)
-    case self.type
+    case node.type
       when :visible
         return "#{$tex.macro('index', node.text)}#{node.text}"
       else
-        return "#{$tex.macro('index', self.attributes['terms'].join('!'))}"
+        return "#{$tex.macro('index', node.attributes['terms'].join('!'))}"
       end
   end
 
@@ -477,6 +492,11 @@ module Process
     "text-left"   => "flushright",
     "text-right"  => "flushright",
     "text-center" => "center"
+  }
+
+  $headings = {
+    'article' => [ 'part', 'section', 'subsection', 'subsubsection', 'paragraph' ],
+    'book'    => [ 'part', 'chapter', 'section', 'subsection', 'subsubsection', 'paragraph' ]
   }
 
   def self.getColor(role)
@@ -580,8 +600,6 @@ module Asciidoctor
         self.open_process
       when :example
         self.example_process
-      when :floating_title
-        self.floating_title_process
       when :preamble
         self.preamble_process
       when :sidebar
@@ -691,18 +709,6 @@ module Asciidoctor
         content = "#{hypertarget}\n#{content}" if id
       end
       $tex.env 'example', content
-    end
-
-
-    def floating_title_process
-      doctype = self.document.doctype
-
-      tags = { 'article' => [ 'part',  'section', 'subsection', 'subsubsection', 'paragraph' ],
-               'book' => [ 'part', 'chapter', 'section', 'subsection', 'subsubsection', 'paragraph' ] }
-
-      tagname = tags[doctype][self.level]
-
-      "\\#{tagname}*《#{self.title}》\n\n#{self.content}\n\n"
     end
 
     def preamble_process
