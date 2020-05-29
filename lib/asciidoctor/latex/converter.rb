@@ -86,6 +86,7 @@ module Asciidoctor
           when 'quote';               Process.quote(node)
           when 'verse';               Process.verse(node)
           when 'floating_title';      Process.floatingTitle(node)
+          when 'table';               Process.table(node)
 
           # TODO : refactor
           when 'open';                node.tex_process  # 
@@ -93,7 +94,6 @@ module Asciidoctor
           when 'preamble';            node.tex_process  # 
           when 'sidebar';             node.tex_process  # 
           when 'toc';                 node.tex_process  # 
-          when 'table';               node.tex_process  # 
           when 'thematic_break';      warn "#{node.node_name} is not implemented"
           when 'colist';              warn "#{node.node_name} is not implemented"
           when 'embedded';            warn "#{node.node_name} is not implemented"

@@ -143,11 +143,11 @@ module Process
     tocentry = "";
 
     # Choose the section's level
-    section = $headings[node.document.doctype][node.level]
+    section = $headings[node.document.doctype][node.level].dup
 
     # Fallback when the requested heading level does not exist
     if section == nil
-      section = $headings[node.document.doctype][-1];
+      section = $headings[node.document.doctype][-1].dup;
       warn "Latex #{node.document.doctype} does not support " +
            "heading level #{node.level}, uses #{section} instead".magenta
     end
@@ -305,11 +305,11 @@ module Process
 
   def self.floatingTitle(node)
     # Choose the section's level
-    section = $headings[node.document.doctype][node.level]
+    section = $headings[node.document.doctype][node.level].dup
 
     # Fallback when the requested heading level does not exist
     if section == nil
-      section = $headings[node.document.doctype][-1];
+      section = $headings[node.document.doctype][-1].dup;
       warn "Latex #{node.document.doctype} does not support " +
            "heading level #{node.level}, uses #{section} instead".magenta
     end
@@ -317,6 +317,211 @@ module Process
     result  = $tex.macro(section, $tex.escape(node.title)) + "\n"
     return result
   end
+
+  # ---------------------------------------------------------------------------
+  # Table export
+
+  def self.table(node)
+    # TODO: Insert header and footer row
+    result = ""
+
+    grid  = (node.attributes['grid']  == "none") ? false : true
+    frame = (node.attributes['frame'] == "none") ? false : true
+
+    table = self.tableCreateData(node)
+    self.debugTableSimple(table)
+
+    result = ""
+
+    table.each_with_index do |row, y|
+        txtCell   = []
+        txtBorder = []
+        row.each_with_index do |cell, x|
+          txtCell   << cell.getContent
+          txtBorder << cell.getBorder
+        end # each cell
+
+        # Remove nil cells
+        txtCell   = txtCell.filter_map{   |cell| cell unless cell.nil?}
+        txtBorder = txtBorder.filter_map{ |cell| cell unless cell.nil?}
+
+        # Prints the result
+        result << "#{txtCell.join(" &\n")} \\\\ \n#{txtBorder.join(" ")} \n"
+    end # each row
+
+    result = "\\hline\n#{result}\\hline\n" if frame
+    result = $tex.env("tabular", self.tableColumnsSpec(node), result)
+    result = $tex.env("center", result)
+    return result
+  end
+
+  class TableCell
+    # TODO: Save vertical and horizontal alignment in each TableCell
+    # TODO: Before cell contentn, add \raggedleft, \centering  for right or center horizontal alignments
+    # TODO: Use m (middle), p (top), b (bottom) column type for the vertical alignement in \multicolumn
+    # TODO: Manage the cell left and right borders 
+    attr_accessor :rowspan, :colspan, :repeated, :content, :x, :y
+
+    def initialize(rowspan, colspan, repeated, content)
+      @rowspan = rowspan.nil? ? 1 : rowspan;
+      @colspan = colspan.nil? ? 1 : colspan;
+      @repeated = repeated
+      @content = content
+      @x = 0
+      @y = 0
+    end
+
+    def getContent
+      result = self.content
+      if result != nil
+        result = $tex.macro("multirow",   self.rowspan,  "*",   result) if (self.rowspan > 1) and (!self.repeated)
+        result = $tex.macro("multicolumn", self.colspan, "|c|", result)
+      end
+      return result
+    end
+
+    def getBorder
+      result = nil
+      if (self.content != nil) and (self.rowspan == 1)
+        result = $tex.macro("cline", "#{self.x + 1}-#{self.x + self.colspan}") + " "
+      end
+      return result
+    end
+  end
+
+  def self.WriteTable(tabular, y, x, object)
+    content = object.content
+    content = "nil"   if content.nil?
+    content = "empty" if content == ""
+
+    puts "tabular[#{y}][#{x}] = #{content}"
+    object.x = x
+    object.y = y
+    tabular[y][x] = object
+  end
+
+  def self.tableCreateData(node)
+    tabular = Array.new(node.rows.body.count) {
+      Array.new(node.columns.count, nil)
+    }
+
+    # Create 2D array with tabular cells
+    node.rows.body.each_with_index do |row, y|
+      trueX = 0
+      row.each_with_index do |cell, x|
+        # Skip rowspanned cells
+        while tabular[y][trueX] != nil
+          trueX += 1
+        end
+
+        tab = TableCell.new(cell.rowspan, cell.colspan, false, cell.content.join(" "))
+
+        (1..tab.colspan).each do |dx|
+          # Fill the column
+          (1..tab.rowspan).each do |dy|
+            if dx == 1
+              if dy == 1
+                self.WriteTable(tabular, y, trueX, tab)
+              else
+                self.WriteTable(tabular, y + dy - 1, trueX, TableCell.new(tab.rowspan - dy + 1, tab.colspan, true, ""))
+              end
+            else
+              self.WriteTable(tabular, y + dy - 1, trueX + dx - 1, TableCell.new(0, 0, true, nil))
+            end
+          end # for rowspan
+        end # for colspan
+      end # each cells
+    end # each rows
+
+    return tabular
+  end
+
+  def self.debugTableSimple(table)
+    puts ""
+    puts "---------------------------------------------------------"
+    table.each_with_index do |row, y|
+      text = row.map{ |cell|
+        if cell.nil?
+          "XX"
+        else
+          if cell.content.nil?
+            "--"
+          else
+            cell.content
+          end
+        end
+      }
+      puts text.join(" | ")
+    end
+    puts "---------------------------------------------------------"
+  end
+
+  def self.debugTable(table)
+    puts ""
+    puts "---------------------------------------------------------"
+    table.each_with_index do |row, y|
+      row.each_with_index do |cell, x|
+        puts "rowspan = #{cell.rowspan} colspan = #{cell.colspan} content = #{cell.content}"
+      end
+      puts "next line"
+    end
+    puts "---------------------------------------------------------"
+  end
+
+  def self.tableAlignH(column)
+    case column.attributes['halign']
+      when 'right';  return "<{\\raggedleft}"
+      when 'center'; return "<{\\centering}"
+      else           return ""
+    end
+  end
+
+  def self.tableColumnsSpec(table)
+    # Compute the total table width as specifiedin the adoc file
+    tableWidth = 0.0
+    table.columns.each{ |col| tableWidth += col.attributes['width'].to_f }
+
+    # Table with grid ?
+    grid  = (table.attributes['grid']  == "none") ? ' ' : '|'
+
+    # Table with frame ?
+    frame = (table.attributes['frame'] == "none") ? ' ' : '|'
+
+    # The variable colSpacing represents the spacing between columns that LaTeX introduces
+    # The main problem is that the exact value is not known and is an absolute value
+    # For MY basic template it is about 2.5% of a A4 portrait paper
+    colSpacing = 0.025
+
+    # Produce an array with the latex column specification (width and alignement)
+    result = []
+
+    table.columns.each do |col|
+      colWidth = col.attributes['width'].to_f / tableWidth - colSpacing
+      colWidth = colWidth.round(3)
+      colAlign = self.tableAlignH(col)
+      result.push("m{#{colWidth}\\textwidth}#{colAlign}")
+    end
+
+    return "#{frame}#{result.join(grid)}#{frame}"
+  end
+
+  def self.tableMulticol(cellWidth, cellFrmt, cellContent)
+    if cellWidth.nil? || (cellWidth == 1)
+      return cellContent
+    end
+    return $tex.macro("multicolumn", cellWidth, cellFrmt, cellContent)
+  end
+
+  def self.tableMultirow(height, width, content)
+    if height.nil? || (height == 1)
+      return content
+    end
+    return $tex.macro("multirow", height, width, content)
+  end
+
+
+  
+
 
 
 
@@ -575,6 +780,9 @@ module Process
     filename = getImageFile(node)
     return $tex.macro_opt("includegraphics", "width=#{width}", filename)
   end
+
+
+
 end # module Process
 
 
@@ -748,21 +956,8 @@ module Asciidoctor
       end
     end
 
-    def multicol(width, fmt, content)
-      if width.nil? || (width == 1)
-        content
-      else
-        "\\multicolumn《#{width}》《#{fmt}》《#{content}》"
-      end
-    end
 
-    def multirow(height, width, content)
-      if height.nil? || (height == 1)
-        content
-      else
-        "\\multirow《#{height}》《#{width}》《#{content}》"
-      end
-    end
+
 
     def debug_cell(cell)
       output = ""
@@ -779,29 +974,6 @@ module Asciidoctor
       end
   
       puts "#{output} " + self.get_cell_content(cell)
-    end
-
-    def get_table_width()
-      table_width = 0
-      self.columns.each do |onecol|
-        table_width += onecol.attributes['width']
-      end
-      table_width
-    end
-
-    def get_columns_header(table_width)
-      # DANGER HACK BY Nico
-      # My LaTeX installation adds 0.4cm for each column which is 
-      # about 2.5% of the page width (17cm in my template) so I
-      # reduce the column width by 2.5cm each
-      reduction = 0.025
-      alignment = []
-      self.columns.each do |onecol|
-        width = onecol.attributes['width'].to_f / table_width - reduction
-        width = width.round(3)
-        alignment << "m{#{width}\\textwidth}"
-      end
-      alignment
     end
 
     def fill_array(the_array, x, y, dx, dy)
@@ -823,153 +995,6 @@ module Asciidoctor
       end
     end
 
-    def tex_process_buggy_borders
-      #-------------------------------------------------------------------------
-      # NICOLAS TABLE LATEX
-      # self.columns[0].attributes[] colnumber, width, halign, valign
-      table_width = self.get_table_width()
-      alignment = self.get_columns_header(table_width.to_f)
-      alignment = alignment.join('|')
 
-      output  = "\\begin《center》\n"
-      output << "\\begin《tabular》《|#{alignment}|》\n"
-      output << "\\hline\n"
-
-      cols_nb = self.columns.count
-      rows_nb = self.rows.body.count
-      output_array = Array.new(rows_nb) { Array.new(cols_nb, 0)}
-
-      # For each line in the table
-      self.rows.body.each_with_index do |row, rowIdx|
-        # Start in cell 0
-        idx = 0
-
-        row.each do |cell|
-          while output_array[rowIdx][idx] != 0 do
-            idx = idx + 1
-          end
-
-          rs = (cell.rowspan.nil? ? 1 : cell.rowspan);
-          cs = (cell.colspan.nil? ? 1 : cell.colspan);
-          self.fill_array(output_array, idx, rowIdx, cs, rs)
-          output_array[rowIdx][idx] = cell
-          idx += cs
-        end # each cell in row
-
-      end # each row in table
-
-      output_array.each_with_index do |row, y|
-        row_array = []
-        rules = ""
-        row.each_with_index do |cell, idx|
-          if cell.is_a? Integer
-            if cell == 0
-              # skip the cell, because au colspan
-            else
-              # Empty cell because of rowspan
-              row_array << self.multicol(cell, "|c|", " ")
-            end
-          else
-            content = self.get_cell_content(cell)
-            content = self.multirow(cell.rowspan, "*", content)
-            row_array << self.multicol(cell.colspan, "|c|", content)
-          end
-
-          if output_array[y+1].nil?
-            rules << "\\cline《#{idx+1}-#{idx+1}》 "
-          else
-            if output_array[y+1][idx].is_a? Integer
-              if output_array[y+1][idx] == 0
-                # skip the cell, because au colspan
-                rules << "\\cline《#{idx+1}-#{idx+1}》 "
-              end
-            else
-              rules << "\\cline《#{idx+1}-#{idx+1}》 "
-            end
-          end
-        end
-
-        output << row_array.join(" & \n")
-        output << "\\\\"
-        output << rules            #output << "\\hline"
-        output << "\n\n"
-      end
-
-      output << "\\hline\n"
-      output << "\\end{tabular}\n"
-      output << "\\end{center}\n"
-      "#{output}"
-      #-------------------------------------------------------------------------
-    end
-
-    def tex_process
-      #-------------------------------------------------------------------------
-      # self.columns[0].attributes[] colnumber, width, halign, valign
-      table_width = self.get_table_width()
-      alignment = self.get_columns_header(table_width.to_f)
-      alignment = alignment.join('|')
-
-      output  = "\\begin《center》\n"
-      output << "\\begin《tabular》《|#{alignment}|》\n"
-      output << "\\hline\n"
-
-      cols_nb  = self.columns.count
-      rows_nb  = self.rows.body.count
-      rowsinfo = Array.new(cols_nb) { "1/1"}   # RowSpan/ColSpan
-
-      # For each line in the table
-      self.rows.body.each_with_index do |row, y|
-        row_array = []
-        borders = ""
-        x = 0
-
-        # Foreach Cells in Row
-        row.each do |cell|
-          # Extract info from previous row
-          old = rowsinfo[x].split('/')
-          ors = old[0].to_i
-          ocs = old[1].to_i
-
-          # Previous row spans down
-          if ors > 1
-            ors -= 1
-            rowsinfo[x] = "#{ors}/#{ocs}"
-            row_array << self.multicol(ocs, "|c|", ' ') # Empty cell
-            if ors == 1
-              borders << "\\cline《#{x+1}-#{x+ocs}》 "
-            end
-            x += ocs   # Compute next cell x position (skip spanned columns)
-          end
-
-          # Current cell's span information
-          rs = (cell.rowspan.nil? ? 1 : cell.rowspan);
-          cs = (cell.colspan.nil? ? 1 : cell.colspan);
-
-          # Add content to latex result
-          content = self.get_cell_content(cell)
-          content = self.multirow(rs, "*", content)
-          row_array << self.multicol(cs, "|c|", content)
-
-          # Save current cell info for the next row
-          rowsinfo[x] = "#{rs}/#{cs}"
-          if rs == 1
-            borders << "\\cline《#{x+1}-#{x+cs}》 "
-          end
-          x += cs
-        end # Foreach Cells in Row
-
-        output << row_array.join(" & \n")
-        output << " \\\\"
-        output << " #{borders}"            #output << "\\hline"
-        output << "\n\n"
-
-      end # Foreach Rows in Table
-
-      output << "\\hline\n"
-      output << "\\end{tabular}\n"
-      output << "\\end{center}\n"
-      "#{output}"
-      #-------------------------------------------------------------------------
-    end
   end
 end
