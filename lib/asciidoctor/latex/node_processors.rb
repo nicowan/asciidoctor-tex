@@ -325,11 +325,15 @@ module Process
     # TODO: Insert header and footer row
     result = ""
 
-    grid  = (node.attributes['grid']  == "none") ? false : true
-    frame = (node.attributes['frame'] == "none") ? false : true
+    grid  = !(node.attributes['grid']  == "none")
+    # TODO: Manage frame = topbot, sides
+    frame = !(node.attributes['frame'] == "none")
 
-    table = self.tableCreateData(node)
-    self.debugTableSimple(table)
+    #  Create an array with the columns width in ratio
+    columns = self.createColumns(node)
+
+    # Create a 2D array wit all cells
+    table = self.tableCreateData(node, columns)
 
     result = ""
 
@@ -337,8 +341,8 @@ module Process
         txtCell   = []
         txtBorder = []
         row.each_with_index do |cell, x|
-          txtCell   << cell.getContent
-          txtBorder << cell.getBorder
+          txtCell   << cell.getContent(grid, frame)
+          txtBorder << cell.getBorder(grid, frame)
         end # each cell
 
         # Remove nil cells
@@ -355,85 +359,178 @@ module Process
     return result
   end
 
-  class TableCell
-    # TODO: Save vertical and horizontal alignment in each TableCell
-    # TODO: Before cell contentn, add \raggedleft, \centering  for right or center horizontal alignments
-    # TODO: Use m (middle), p (top), b (bottom) column type for the vertical alignement in \multicolumn
-    # TODO: Manage the cell left and right borders 
-    attr_accessor :rowspan, :colspan, :repeated, :content, :x, :y
+  def self.createColumns(table)
+    # The table width as specified in the markup
+    sumOfWidth = 0.0
+    table.columns.each{ |col| sumOfWidth += col.attributes['width'].to_f }
 
-    def initialize(rowspan, colspan, repeated, content)
-      @rowspan = rowspan.nil? ? 1 : rowspan;
-      @colspan = colspan.nil? ? 1 : colspan;
-      @repeated = repeated
-      @content = content
-      @x = 0
-      @y = 0
+    # The table width as in the width attribute (in percent)
+    tableWidth = table.attributes['width']
+    if tableWidth != nil and tableWidth.include?("%")
+      tableWidth = tableWidth.to_f
+    else
+      tableWidth = 100
     end
 
-    def getContent
-      result = self.content
-      if result != nil
-        result = $tex.macro("multirow",   self.rowspan,  "*",   result) if (self.rowspan > 1) and (!self.repeated)
-        result = $tex.macro("multicolumn", self.colspan, "|c|", result)
-      end
-      return result
-    end
+    # The variable colSpacing represents the spacing between columns that LaTeX introduces
+    # The main problem is that the exact value is not known and is an absolute value
+    # For MY basic template it is about 2.5% of a A4 portrait paper
+    colSpacing = 0.025
 
-    def getBorder
-      result = nil
-      if (self.content != nil) and (self.rowspan == 1)
-        result = $tex.macro("cline", "#{self.x + 1}-#{self.x + self.colspan}") + " "
-      end
-      return result
-    end
+    # The columns array represents the column width in percent of the textwidth
+    result = []
+    table.columns.each{ |col|
+      colWidth = col.attributes['width'].to_f / sumOfWidth - colSpacing
+      colWidth = 0.05 if colWidth < 0
+      colWidth = colWidth * tableWidth / 100
+      result << colWidth.round(3)
+    }
+
+    return result
   end
 
-  def self.WriteTable(tabular, y, x, object)
-    content = object.content
-    content = "nil"   if content.nil?
-    content = "empty" if content == ""
-
-    puts "tabular[#{y}][#{x}] = #{content}"
-    object.x = x
-    object.y = y
-    tabular[y][x] = object
-  end
-
-  def self.tableCreateData(node)
+  def self.tableCreateData(node, columns)
     tabular = Array.new(node.rows.body.count) {
       Array.new(node.columns.count, nil)
     }
 
-    # Create 2D array with tabular cells
+    # Fill the 2D array with the table cells
     node.rows.body.each_with_index do |row, y|
       trueX = 0
+
       row.each_with_index do |cell, x|
         # Skip rowspanned cells
         while tabular[y][trueX] != nil
           trueX += 1
         end
 
-        tab = TableCell.new(cell.rowspan, cell.colspan, false, cell.content.join(" "))
-
-        (1..tab.colspan).each do |dx|
-          # Fill the column
-          (1..tab.rowspan).each do |dy|
-            if dx == 1
-              if dy == 1
-                self.WriteTable(tabular, y, trueX, tab)
-              else
-                self.WriteTable(tabular, y + dy - 1, trueX, TableCell.new(tab.rowspan - dy + 1, tab.colspan, true, ""))
-              end
-            else
-              self.WriteTable(tabular, y + dy - 1, trueX + dx - 1, TableCell.new(0, 0, true, nil))
-            end
-          end # for rowspan
-        end # for colspan
+        data = LatexCell.new(cell)
+        trueX = data.fillArray(tabular, trueX, y, columns)
       end # each cells
     end # each rows
 
     return tabular
+  end
+
+  def self.tableColumnsSpec(table)
+    result = ""
+    table.columns.each{ |col| result << "c" }
+    return result
+  end
+
+  def self.tableAlignH(column)
+    case column.attributes['halign']
+      when 'right';  return "<{\\raggedleft}"
+      when 'center'; return "<{\\centering}"
+      else           return ""
+    end
+  end
+
+  class LatexCell
+    attr_accessor :rowspan, :colspan, :repeated, :content, :x, :y, :width, :halign, :valign, :maxX, :maxY
+
+    def initialize(node)
+      self.rowspan  = node.rowspan.nil? ? 1 : node.rowspan;
+      self.colspan  = node.colspan.nil? ? 1 : node.colspan;
+      self.content  = node.content.join(" ")
+      self.halign   = node.attributes['halign']
+      self.valign   = node.attributes['valign']
+      self.repeated = false
+      self.width = 0
+      self.x = 0
+      self.y = 0
+      self.maxY = node.parent.parent.rows.body.count - 1
+      self.maxX = node.parent.parent.columns.count - 1
+    end
+
+    def write(tabular, x, y)
+      self.x = x
+      self.y = y
+      tabular[y][x] = self
+    end
+
+    def fillArray(tabular, x, y, columns)
+      # Compute the cell width
+      (x..x + self.colspan - 1).each { |lx|
+        self.width += columns[lx]
+      }
+
+      # Fill the tabular with the cells
+      (x..x + self.colspan - 1).each do |lx|
+        # Fill the column
+        (y..y + self.rowspan - 1).each do |ly|
+          if    lx == x and ly == y
+            # The real cell
+            self.write(tabular, lx, ly)
+          elsif lx == x and ly != y
+            # Empty colspan, it is the continuation of a rowspan
+            copy = self.dup
+            copy.rowspan -= ly - y
+            copy.content  = ""
+            copy.repeated = true
+            copy.write(tabular, lx, ly)
+          else
+            # Empty cell because it is covered by a colspan
+            copy = self.dup
+            copy.content  = nil
+            copy.repeated = true
+            copy.width = 0
+            copy.write(tabular, lx, ly)
+          end
+        end # for rowspan
+      end # for colspan
+      return x + self.colspan
+    end
+
+    def getContent(grid, frame)
+      result = self.content
+      if result != nil
+        # Manage the horizontal alignement (insert raggedleft or centering)
+        if    self.halign == 'right';  result = "#{$tex.macro('raggedleft')} #{result}"
+        elsif self.halign == 'center'; result = "#{$tex.macro('centering')} #{result}"
+        end
+
+        # Use the real cell width
+        colWidth = "#{self.width}#{$tex.macro('textwidth')}"
+
+        # Manage the rowspan 
+        result = $tex.macro("multirow",   self.rowspan,  colWidth,   result) if (self.rowspan > 1) and (!self.repeated)
+
+        # Use m (middle), p (top), b (bottom) column type for the vertical alignement in \multicolumn
+        if    self.valign == 'middle'; colType = 'm'
+        elsif self.valign == 'bottom'; colType = 'b'
+        else                           colType = 'p'
+        end
+
+        # Manage cell width
+        colType = "#{colType}#{$tex.braces(colWidth)}"
+
+        # Draw the left border of a cell
+        left = ' '
+        left = '|' if ((frame and (self.x == 0)) or (grid  and (self.x != 0)))
+
+        # Draw the right border of a cell
+        xmax  = 3 
+        right = ' '
+        right = '|' if (frame and (self.x == self.maxX))
+
+        # The column specifier with left and right border
+        colType = "#{left}#{colType}#{right}"
+
+        result = $tex.macro("multicolumn", self.colspan, colType, result)
+      end
+      return result
+    end
+
+    def getBorder(grid, frame)
+      result = nil
+      if (self.content != nil) and (self.rowspan == 1)
+        if (self.y != self.maxY) and grid
+          result = $tex.macro("cline", "#{self.x + 1}-#{self.x + self.colspan}") + " "
+        end
+      end
+      return result
+    end
   end
 
   def self.debugTableSimple(table)
@@ -468,56 +565,9 @@ module Process
     puts "---------------------------------------------------------"
   end
 
-  def self.tableAlignH(column)
-    case column.attributes['halign']
-      when 'right';  return "<{\\raggedleft}"
-      when 'center'; return "<{\\centering}"
-      else           return ""
-    end
-  end
 
-  def self.tableColumnsSpec(table)
-    # Compute the total table width as specifiedin the adoc file
-    tableWidth = 0.0
-    table.columns.each{ |col| tableWidth += col.attributes['width'].to_f }
 
-    # Table with grid ?
-    grid  = (table.attributes['grid']  == "none") ? ' ' : '|'
 
-    # Table with frame ?
-    frame = (table.attributes['frame'] == "none") ? ' ' : '|'
-
-    # The variable colSpacing represents the spacing between columns that LaTeX introduces
-    # The main problem is that the exact value is not known and is an absolute value
-    # For MY basic template it is about 2.5% of a A4 portrait paper
-    colSpacing = 0.025
-
-    # Produce an array with the latex column specification (width and alignement)
-    result = []
-
-    table.columns.each do |col|
-      colWidth = col.attributes['width'].to_f / tableWidth - colSpacing
-      colWidth = colWidth.round(3)
-      colAlign = self.tableAlignH(col)
-      result.push("m{#{colWidth}\\textwidth}#{colAlign}")
-    end
-
-    return "#{frame}#{result.join(grid)}#{frame}"
-  end
-
-  def self.tableMulticol(cellWidth, cellFrmt, cellContent)
-    if cellWidth.nil? || (cellWidth == 1)
-      return cellContent
-    end
-    return $tex.macro("multicolumn", cellWidth, cellFrmt, cellContent)
-  end
-
-  def self.tableMultirow(height, width, content)
-    if height.nil? || (height == 1)
-      return content
-    end
-    return $tex.macro("multirow", height, width, content)
-  end
 
 
   
@@ -780,9 +830,6 @@ module Process
     filename = getImageFile(node)
     return $tex.macro_opt("includegraphics", "width=#{width}", filename)
   end
-
-
-
 end # module Process
 
 
@@ -802,8 +849,6 @@ module Asciidoctor
 
     def tex_process
       case self.blockname
-
-
       when :open
         self.open_process
       when :example
@@ -944,57 +989,5 @@ module Asciidoctor
 
   end # class Block
 
-  class Table
-    def get_cell_content(the_cell)
-      
-      if Array === the_cell.content
-        # The content has not been "parsed", must escape special chars
-        result = $tex.escape the_cell.content.join("\n")
-      else
-        # The content is already parsed, just copy it
-        result = the_cell.content
-      end
-    end
 
-
-
-
-    def debug_cell(cell)
-      output = ""
-      if cell.rowspan.nil?
-        output << "rowspan = 1 "
-      else
-        output << "rowspan = #{cell.rowspan} "
-      end
-
-      if cell.colspan.nil?
-        output << "colspan = 1 "
-      else
-        output << "colspan = #{cell.colspan} "
-      end
-  
-      puts "#{output} " + self.get_cell_content(cell)
-    end
-
-    def fill_array(the_array, x, y, dx, dy)
-      maxY = y + dy
-      maxX = x + dx
-      sy   = y
-      while y < maxY do
-        tx = x
-        while tx < maxX do
-          # put 0 on the 1st line and put 1 on other lines
-          if (y == sy)
-            the_array[y][tx] = 0
-          else
-            the_array[y][tx] = ((x == tx) ? dx : 0)
-          end
-          tx = tx + 1
-        end
-        y = y + 1
-      end
-    end
-
-
-  end
 end
