@@ -1,0 +1,20 @@
+= TODO for asciidoctor-tex 
+
+== build and install
+
+cd ..; gem build asciidoctor-latex.gemspec; gem install *.gem; cd examples
+
+> cd ..
+> gem build asciidoctor-latex.gemspec
+> gem install *.gem
+> cd examples
+
+
+== A faire
+
+* Supporter tous les blocs
+* Tests unitaires pour les blocs
+* Gérer la liste des environnements à inclure
+* Gérer la liste des macros à inclure
+* Gérer les différents type de documents book, article et beamer
+* Gérer les templates personnelles
