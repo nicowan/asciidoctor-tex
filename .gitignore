@@ -32,6 +32,7 @@ work/
 *synctex.gz
 
 # junk from my test, to remove
+learnruby/
 test/examples/tex/*.adoc
 test/examples/tex/*.html
 test/examples/tex/*.txt
