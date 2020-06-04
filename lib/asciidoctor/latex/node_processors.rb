@@ -1,6 +1,4 @@
 require 'asciidoctor'
-require 'asciidoctor/latex/core_ext/colored_string'
-require 'asciidoctor/latex/core_ext/utility'
 require 'htmlentities'
 
 module TexUtilities
@@ -149,7 +147,7 @@ module Process
     if section == nil
       section = $headings[node.document.doctype][-1].dup;
       warn "Latex #{node.document.doctype} does not support " +
-           "heading level #{node.level}, uses #{section} instead".magenta
+           "heading level #{node.level}, uses #{section} instead"
     end
 
     unless node.document.attributes["sectnums"]
@@ -311,7 +309,7 @@ module Process
     if section == nil
       section = $headings[node.document.doctype][-1].dup;
       warn "Latex #{node.document.doctype} does not support " +
-           "heading level #{node.level}, uses #{section} instead".magenta
+           "heading level #{node.level}, uses #{section} instead"
     end
     section << "*" 
     result  = $tex.macro(section, $tex.escape(node.title)) + "\n"
@@ -617,7 +615,7 @@ module Process
         result = $tex.macro("textsubscript", node.text)
 
       when :asciimath
-        warn "#{node.type} not suported in LaTeX backend".red
+        warn "#{node.type} not suported in LaTeX backend"
         result = "\\verb€#{node.text}€"
 
       when :latexmath
@@ -641,7 +639,7 @@ module Process
       #  result = $tex.macro("texttt", node.text)
 
     else
-        warn "Unknown node type #{node.type}".magenta
+        warn "Unknown node type #{node.type}"
         result = node.text
     end
 
@@ -908,7 +906,6 @@ module Asciidoctor
       if document.attributes['toc-placement'] == 'macro'
         $tex.macro 'tableofcontents'
       end
-      # warn "Please implement me! (toc_process)".red if $VERBOSE
     end
 
     # Process open blocks.  Map a block of the form

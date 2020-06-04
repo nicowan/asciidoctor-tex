@@ -1,6 +1,5 @@
 require 'asciidoctor'
 require 'asciidoctor/extensions' unless RUBY_ENGINE == 'opal'
-require 'asciidoctor/latex/core_ext/colored_string'
 require 'asciidoctor/latex/ent_to_uni'
 require 'asciidoctor/latex/node_processors'
 require 'asciidoctor/latex/tex_block'
@@ -50,8 +49,6 @@ module Asciidoctor
       include Asciidoctor::Converter
       include Process
       register_for 'latex'
-
-      # puts "HOLA!".red
 
       Asciidoctor::Extensions.register do
         postprocessor EntToUni if document.basebackend? 'tex' unless document.attributes['unicode'] == 'no'
@@ -113,7 +110,7 @@ module Asciidoctor
           when 'inline_callout';      warn "#{node.node_name} is not implemented"
 
           else
-            warn %(Node to implement: #{node.node_name}, class = #{node.class}).magenta #if $VERBOSE
+            warn %(Node to implement: #{node.node_name}, class = #{node.class}) #if $VERBOSE
         end
       end
     end # class Converter
