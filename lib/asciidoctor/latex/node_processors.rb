@@ -2,11 +2,14 @@ require 'asciidoctor'
 require 'htmlentities'
 
 module TexUtilities
+  @definitions = {}
+
   def self.braces(*args)
     args.map{|arg| "《#{arg}》"}.join("")
   end
 
   def self.macro(name, *args)
+    pushMacro(name, args.length)
     "\\#{name}#{braces *args}"
   end
 
@@ -36,11 +39,14 @@ module TexUtilities
   end
 
   def self.env(env, *args)
+    # args array contains the environment's body which is not an argument -> decrement
+    pushEnv(env, args.length - 1)
     body = args.pop
     "\n#{self.begin(env)}#{braces *args}\n#{body}\n#{self.end(env)}\n"
   end
 
   def self.env_opt(env, opt, *args)
+    # Do not support custom environment with optional args
     body = args.pop
     "\n#{self.begin(env)}〈#{opt}〉#{braces *args}\n#{body}\n#{self.end(env)}\n"
   end
@@ -85,6 +91,82 @@ module TexUtilities
     result = result.gsub("[", '〈')
     result = result.gsub("]", '〉')
   end
+
+
+  def self.pushMacro(envName, argCount)
+    # only push custom macros (starting with adocMacro)
+    if envName.start_with?("adocMacro")
+      @definitions[envName] = {
+        'type'     => 'macro',
+        'argCount' => argCount,
+        'optCount' => 0
+      }
+    end
+  end
+
+  def self.pushEnv(envName, argCount)
+    # only push custom environments (starting with adocEnv)
+    if envName.start_with?("adocEnv")
+      @definitions[envName] = {
+        'type'     => 'environment',
+        'argCount' => argCount,
+        'optCount' => 0
+      }
+    end
+  end
+
+  # Write the LaTeX code to define a custom environment with several parameters
+  def self.writeNewEnvironment(envName, paramCount)
+    paramValue = "% latex macros before env content\n"
+    (1..paramCount).each { |idx| paramValue += "##{idx}\n\n"}
+
+    result =  "% Dummy environment for #{envName} should be overridden in template\n"
+    result << "\\ifdefined \\#{envName} \\else \n"
+    result << "\\newenvironment#{self.braces(envName)}"
+    result << "〈#{paramCount}〉" if paramCount > 0
+    result << "\n"
+    result << "#{self.braces(paramValue)}\n"
+    result << "#{self.braces("% latex macros after  env content\n")}\n"
+
+    result << "\\fi \n\n"
+    return result
+  end
+
+  # Write the LaTeX code to define a custom command with several parameters
+  def self.writeNewCommand(envName, paramCount)
+    paramValue = ""
+    (1..paramCount).each { |idx| paramValue += "##{idx} "}
+
+    result =  "% Dummy environment for #{envName} should be overridden in template\n"
+    result << "\\ifdefined \\#{envName} \\else \n"
+    result << "\\newcommand#{self.braces("\\" + envName)}"
+    result << "〈#{paramCount}〉" if paramCount > 0
+    result << "#{self.braces(paramValue)}\n"
+
+    result << "\\fi \n\n"
+    return result
+  end
+
+  # Generate the liste of dummy definition for each environments use in the document
+  def self.writeEnvironmentDefinition()
+    result =  "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n"
+    result << "% Automatic generation of environments definition \n"
+    result << "% These environments should be defined in your template \n"
+    result << "% To get the better typesetting results\n\n"
+
+    @definitions.each do |key, value|
+      if value['type'] == 'macro'
+        result << writeNewCommand(key, value['argCount'])
+      else
+        result << writeNewEnvironment(key, value['argCount'])
+      end
+      result << "\n"
+    end
+
+    return result
+  end
+
+
 end
 
 module Process
@@ -97,6 +179,10 @@ module Process
 
   def self.document(node)
     doc = ''
+
+    # Convert the content before processing the latex structure because we need
+    # a list of the used environments 
+    content = node.content
 
     unless node.embedded? or node.document.attributes['header'] == 'no'
       doc << "% ======================================================================\n"
@@ -120,6 +206,9 @@ module Process
       doc << $tex.macro( "author", node.author)   + "\n"
       doc << $tex.macro( "date",   node.revdate)  + "\n"
 
+      doc << "\n"
+      doc << $tex.writeEnvironmentDefinition()
+
       doc << "\n\n\n"
       doc << $tex.begin( "document") + "\n"
 
@@ -127,7 +216,7 @@ module Process
       doc << self.insertTableOfContents(node)
     end
 
-    doc << node.content
+    doc << content
     doc << "\n"
 
     unless node.embedded? or node.document.attributes['header'] == 'no'

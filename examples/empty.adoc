@@ -1,0 +1,14 @@
+// Empty document to test the latex preamble
+
+.Paragraphe with title
+This is the paragraph content
+
+
+NOTE: This is the empty document
+
+
+[beurk]
+.This is the open block's title
+--
+This is an open block content of type beurk
+--
