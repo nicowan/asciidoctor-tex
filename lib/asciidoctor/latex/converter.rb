@@ -2,9 +2,9 @@ require 'asciidoctor'
 require 'asciidoctor/extensions' unless RUBY_ENGINE == 'opal'
 require 'asciidoctor/latex/ent_to_uni'
 require 'asciidoctor/latex/node_processors'
-require 'asciidoctor/latex/tex_block'
-require 'asciidoctor/latex/tex_preprocessor'
-require 'asciidoctor/latex/tex_postprocessor'
+#require 'asciidoctor/latex/tex_block'
+#require 'asciidoctor/latex/tex_preprocessor'
+#require 'asciidoctor/latex/tex_postprocessor'
 
 $VERBOSE = true
 

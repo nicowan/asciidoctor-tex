@@ -105,7 +105,7 @@ image::pyramide.png[role=center, width=50%]
 
 [cols="^.^2a,12a", frame=none]
 |====
-| image:objectif.png[width=25%]
+| image:objectif.png[width=10%]
 | pasrigolo
 
 Une case de tableau avec des caractères spéciaux : le $ dollard, le & et commercial, # dièse, _ underline, \| pipe, { accolade gauche, } accolade droite, [ crochet carré gauche, ] crochet carré droite, ... points de suspension,  % pourcent, ~ Tilde et le  ^ petit chapeau

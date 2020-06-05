@@ -505,7 +505,9 @@ module Process
     def initialize(node)
       self.rowspan  = node.rowspan.nil? ? 1 : node.rowspan;
       self.colspan  = node.colspan.nil? ? 1 : node.colspan;
-      self.content  = node.content.join(" ")
+      self.content  = node.content
+      self.content  = self.content.join(" ") if self.content.kind_of?(Array)
+      self.content  = $tex.escape(self.content)
       self.halign   = node.attributes['halign']
       self.valign   = node.attributes['valign']
       self.repeated = false
