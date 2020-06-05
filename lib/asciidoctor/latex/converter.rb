@@ -54,7 +54,6 @@ module Asciidoctor
         postprocessor EntToUni if document.basebackend? 'tex' unless document.attributes['unicode'] == 'no'
         preprocessor  LatexEscape
         postprocessor LatexUnescape
-
       end
 
       def initialize backend, opts
