@@ -84,18 +84,11 @@ module Asciidoctor
           when 'verse';               Process.verse(node)
           when 'floating_title';      Process.floatingTitle(node)
           when 'table';               Process.table(node)
-
-          # TODO : refactor
-          when 'open';                node.tex_process  # 
-          when 'example';             node.tex_process  # 
-          when 'preamble';            node.tex_process  # 
-          when 'sidebar';             node.tex_process  # 
-          when 'toc';                 node.tex_process  # 
-          when 'thematic_break';      warn "#{node.node_name} is not implemented"
-          when 'colist';              warn "#{node.node_name} is not implemented"
-          when 'embedded';            warn "#{node.node_name} is not implemented"
-          when 'video';               warn "#{node.node_name} is not implemented"
-          when 'audio';               warn "#{node.node_name} is not implemented"
+          when 'open';                Process.open(node)
+          when 'sidebar';             Process.sidebar(node)
+          when 'example';             Process.example(node)
+          when 'preamble';            Process.preamble(node)
+          when 'toc';                 Process.toc(node)
 
           # Inline -----------------------------------------------------
           when 'inline_quoted';       Process.inlineQuoted(node)
@@ -108,6 +101,13 @@ module Asciidoctor
           when 'inline_kbd';          Process.inlineKeyboard(node)
           when 'inline_menu';         Process.inlineMenu(node)
           when 'inline_callout';      warn "#{node.node_name} is not implemented"
+
+          # Unprocessed nodes -------------------------------------------------
+          when 'thematic_break';      warn "#{node.node_name} is not implemented"
+          when 'colist';              warn "#{node.node_name} is not implemented"
+          when 'embedded';            warn "#{node.node_name} is not implemented"
+          when 'video';               warn "#{node.node_name} is not implemented"
+          when 'audio';               warn "#{node.node_name} is not implemented"
 
           else
             warn %(Node to implement: #{node.node_name}, class = #{node.class}) #if $VERBOSE

@@ -1,0 +1,12 @@
+// test toc macro
+:toc: macro
+
+== First chapter
+
+Qui in laboris voluptate ea deserunt non veniam sunt culpa sunt amet.
+
+== Last chapter
+
+Qui in laboris voluptate ea deserunt non veniam sunt culpa sunt amet.
+
+toc::[]

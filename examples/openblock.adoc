@@ -1,0 +1,22 @@
+// Test unnamed open blocks
+--
+An open block can be an anonymous container,
+or it can masquerade as any other block.
+--
+
+
+// Test named open blocks
+[sidebar]
+--
+This is aside text.
+
+It is used to present information related to the main content.
+--
+
+// Test named open blocks
+[myenv, role="center"]
+.MyEnv's title
+--
+This is the text in my special block
+--
+

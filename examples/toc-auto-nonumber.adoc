@@ -1,0 +1,10 @@
+// Test the automatic toc without section numbering
+:toc: auto
+
+== First chapter
+
+Qui in laboris voluptate ea deserunt non veniam sunt culpa sunt amet.
+
+== Last chapter
+
+Qui in laboris voluptate ea deserunt non veniam sunt culpa sunt amet.

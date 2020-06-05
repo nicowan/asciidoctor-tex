@@ -316,6 +316,81 @@ module Process
     return result
   end
 
+  def self.open(node)
+    # An open block is a generic block in asciidoctor.
+    # Asciidoctor detect known block type and calls directly the right "converter"
+    # It is mapped to a custom latex environment that must be defined in the template
+
+    # TODO: Should we interprets the role attribute here? center, blue, red, ... ???
+
+    # The block title
+    title = ""
+    title = $tex.escape(node.title) if node.title?
+
+    # BlockType
+    blockType = ""
+    blockType = node.attributes['style'] if node.attributes['style'] != nil
+    blockType = "adocEnv#{blockType.capitalize()}"
+
+    # Stripped content
+    content = node.content
+    content.strip!
+
+    return $tex.env( blockType, title, content)
+  end
+
+  def self.sidebar(node)
+    # Works the same way as openblocks but with fixed environment name
+    # TODO: Should we interprets the role attribute here? center, blue, red, ... ???
+
+    # The block title
+    title = ""
+    title = $tex.escape(node.title) if node.title?
+
+    # Stripped content
+    content = node.content
+    content.strip!
+
+    return $tex.env( "adocEnvSidebar", title, content)
+  end
+
+  def self.example(node)
+    # Works the same way as openblocks but with fixed environment name
+    # TODO: Should we interprets the role attribute here? center, blue, red, ... ???
+
+    # The block title
+    title = ""
+    title = $tex.escape(node.title) if node.title?
+
+    # Stripped content
+    content = node.content
+    content.strip!
+
+    return $tex.env( "adocEnvExample", title, content)
+  end
+
+  def self.preamble(node)
+    # The preamble is the text between the title and the first heading
+
+    # Stripped content
+    content = node.content
+    content.strip!
+
+    return $tex.env( "adocEnvPreamble", content)
+  end
+
+  def self.toc(node)
+    # Should be called when asciidoc file contains "toc::[]" somewhere in the document
+    # and the :toc: variable is set to 'macro'
+    if node.document.attributes['toc-placement'] == 'macro'
+      $tex.macro('tableofcontents')
+    end
+  end
+
+
+
+
+
   # ---------------------------------------------------------------------------
   # Table export
 
@@ -564,16 +639,6 @@ module Process
   end
 
 
-
-
-
-
-  
-
-
-
-
-
   # ---------------------------------------------------------------------------
   # Public inline processing methods
 
@@ -725,11 +790,6 @@ module Process
     return items.join(" #{separator} ")
   end
 
-
-
-
-
-
   # ---------------------------------------------------------------------------
   # Private variables and methods
   private
@@ -776,8 +836,10 @@ module Process
 
   def self.insertTableOfContents(node)
     result = ""
-    result << $tex.macro("tableofcontents") if node.attributes['toc'] != nil
-    return "#{result}\n"
+    if node.attributes['toc-placement'] != nil and node.attributes['toc-placement'] != 'macro'
+      result = "#{$tex.macro("tableofcontents")}\n"
+    end
+    return result
   end
 
   def self.insertFile(fileName)
@@ -829,162 +891,3 @@ module Process
     return $tex.macro_opt("includegraphics", "width=#{width}", filename)
   end
 end # module Process
-
-
-# Yuuk!, The classes in node_processor implement the
-# latex backend for Asciidoctor-latex.  This
-# module is far from complete.
-module Asciidoctor
-
-  include TexUtilities
-  $tex = TexUtilities
-
-  # Proces block elements of varios kinds
-  class Block
-
-    # STANDARD_ENVIRONMENT_NAMES = %w(theorem proposition lemma definition example problem equation)
-    STANDARD_ENVIRONMENT_NAMES = %w(equation)
-
-    def tex_process
-      case self.blockname
-      when :open
-        self.open_process
-      when :example
-        self.example_process
-      when :preamble
-        self.preamble_process
-      when :sidebar
-        self.sidebar_process
-      when :toc
-        self.toc_process
-      else
-        # warn "This is Asciidoctor::Block, tex_process.  I don't know how to do that (#{self.blockname})" if $VERBOSE if $VERBOSE
-        ""
-      end
-    end
-
-
-
-
-    ####################################################################
-
-    def label
-      if self.id
-        label = $tex.macro 'label', self.id
-        # label = $tex.macro 'label', $tex.hypertarget(self.id, self.id)
-      else
-        label = ""
-      end
-      label
-    end
-
-    def options
-      self.attributes['options']
-    end
-
-    def env_title
-      if self.attributes['original_title']
-        "《\\rm (#{self.attributes['original_title']}) 》"
-      else
-        ''
-      end
-    end
-
-    ####################################################################
-
-    def label_line
-      if label == ""
-        ""
-      else
-        label + "\n"
-      end
-    end
-
-    ####################################################################
-
-    def toc_process
-      if document.attributes['toc-placement'] == 'macro'
-        $tex.macro 'tableofcontents'
-      end
-    end
-
-    # Process open blocks.  Map a block of the form
-    #
-    # .Foo
-    # [[hocus_pocus]]
-    # --
-    # La di dah
-    # --
-    #
-    # to
-    #
-    # \begin{Foo}
-    # \label{hocus_pocus}
-    # La di dah
-    # \end{Foo}
-    #
-    # This scheme enables one to map Asciidoc blocks to
-    # LaTeX environments with essentally no knoweldge
-    # of either other than their form.
-    #
-    def open_process
-
-      attr = self.attributes
-
-      # Get title !- nil or make a dummy one
-      title = self.title? ? self.title : 'Dummy'
-
-      # strip constructs like {counter:theorem} from the title
-      title = title.gsub /\{.*?\}/, ""
-      title = title.strip
-
-      if attr['role'] == 'text-center'
-        $tex.env 'center', self.content
-      else
-        self.content
-      end
-
-    end
-
-    def example_process
-      id = self.attributes['id']
-      if self.title
-        heading = $tex.region 'bf', self.title
-        content  = "-- #{heading}.\n#{self.content}"
-      else
-        content = self.content
-      end
-      if id
-        hypertarget = $tex.hypertarget id, self.content.split("\n")[0]
-        content = "#{hypertarget}\n#{content}" if id
-      end
-      $tex.env 'example', content
-    end
-
-    def preamble_process
-      # "\\begin《preamble》\n%% HO HO HO!\n#{self.content}\n\\end《preamble》\n"
-      self.content
-    end
-
-
-    def sidebar_process
-      title = self.title
-      attr = self.attributes
-      id = attr['id']
-      if id
-        content = "\\hypertarget《#{id}》《#{self.content.rstrip}》"
-      else
-        content = self.content
-      end
-      if title
-        title  = $tex.env 'bf', title
-        $tex.env 'sidebar', "#{title}\n#{content.rstrip}"
-      else
-        $tex.env 'sidebar', content
-      end
-    end
-
-  end # class Block
-
-
-end
