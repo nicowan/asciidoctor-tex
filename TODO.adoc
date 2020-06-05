@@ -10,11 +10,11 @@ cd ..; gem build asciidoctor-latex.gemspec; gem install *.gem; cd examples
 > cd examples
 
 
-== A faire
+== The todo list
 
-* Supporter tous les blocs
-* Tests unitaires pour les blocs
-* Gérer la liste des environnements à inclure
-* Gérer la liste des macros à inclure
-* Gérer les différents type de documents book, article et beamer
-* Gérer les templates personnelles
+* Manage the ID in all block or inline elements
+* Include a list of custom environment in the latex preamble
+* Include a list of custom macros in the latex preamble
+* Unit testing for every node types
+* Support for different kind of document type (book, article and beamer)
+* Support for personal templates
