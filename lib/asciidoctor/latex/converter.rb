@@ -1,10 +1,6 @@
 require 'asciidoctor'
 require 'asciidoctor/extensions' unless RUBY_ENGINE == 'opal'
-require 'asciidoctor/latex/ent_to_uni'
 require 'asciidoctor/latex/node_processors'
-#require 'asciidoctor/latex/tex_block'
-#require 'asciidoctor/latex/tex_preprocessor'
-#require 'asciidoctor/latex/tex_postprocessor'
 
 $VERBOSE = true
 
@@ -45,6 +41,15 @@ module Asciidoctor
       end
     end
 
+    # Convert HTML entities to unicode characters
+    class EntToUni < Asciidoctor::Extensions::Postprocessor
+      def process document, output
+        coder  = HTMLEntities.new
+        result = coder.decode output
+        result
+      end
+    end
+
     class Converter
       include Asciidoctor::Converter
       include Process
@@ -63,7 +68,6 @@ module Asciidoctor
       end
 
       def convert node, transform = nil
-
         case node.node_name
           # Block ------------------------------------------------------
           when 'document';            Process.document(node)
