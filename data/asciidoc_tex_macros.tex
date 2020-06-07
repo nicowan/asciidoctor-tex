@@ -1,45 +1,33 @@
-% Needed for Asciidoc
+% Commands for asciidoctor supports
 
-%
 % Commands for colored inline text also used to color an entire paragraph
-%
-\newcommand{\colorRed}[1]   {\textcolor{red}{#1}   }
-\newcommand{\colorBlue}[1]  {\textcolor{blue}{#1}  }
-\newcommand{\colorGreen}[1] {\textcolor{green}{#1} }
-\newcommand{\colorYellow}[1]{\textcolor{yellow}{#1}}
+\newcommand{\adocMacroRed}[1]   {\textcolor{red}{#1}   }
+\newcommand{\adocMacroBlue}[1]  {\textcolor{blue}{#1}  }
+\newcommand{\adocMacroGreen}[1] {\textcolor{green}{#1} }
+\newcommand{\adocMacroYellow}[1]{\textcolor{yellow}{#1}}
 
-%
+
 % Create a title for a paragraph (or other?) blocks
-%
 \newcommand{\adocMacroTitle}[1]{%
   \textbf{\textcolor{black!50!white}{#1}}\newline%
 }
 
-%
+
 % Show menu entries
-% 
 \newcommand{\adocMacroMenu}[1]{\ovalbox{\texttt{\textit{#1}}}}
 \newcommand{\adocMacroNextItem}{\textbf{ $>$ }}
 
 
-%
 % Show keys
-%
 \newcommand{\adocMacroKbd}[1]{\ovalbox{\texttt{#1}}}
 
-%
+
 % Shows buttons
-%
 \newcommand{\adocMacroBtn}[1]{\ovalbox{\textbf{#1}}}
 
 
-
-
-
-% -----------------------------------------------------------------------
 % Defines the adocEnvQuote environment
 % Takes 2 parameters : <Title> and <Attribution>
-%
 \newcommand{\adocQuoteAttribution}{~}
 \newenvironment{adocEnvQuote}[2]{%
     % Placed at environment begin
@@ -60,10 +48,9 @@
   \vspace{1em}
 }
 
-% -----------------------------------------------------------------------
+
 % Defines the adocEnvVerse environment
 % Takes 2 parameters : <Title> and <Attribution>
-%
 \newcommand{\adocVerseAttribution}{~}
 \newenvironment{adocEnvVerse}[2]{%
     % Placed at environment begin
@@ -84,9 +71,6 @@
   \vspace{1em}
 }
 
-
-
-% -----------------------------------------------------------------------
 % Defines the adocEnvAdmonition environment
 % Takes one parameter : <iconname>
 %
@@ -112,72 +96,3 @@
     \end{minipage}
     \newline
 }
-
-
-
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%  Extended quote environment with author
-
-\renewenvironment{quotation}
-{   \leftskip 4em \begin{em} }
-{\end{em}\par }
-
-\def\signed#1{{\leavevmode\unskip\nobreak\hfil\penalty50\hskip2em
-  \hbox{}\nobreak\hfil\raise-3pt\hbox{(#1)}%
-  \parfillskip=0pt \finalhyphendemerits=0 \endgraf}}
-
-
-\newsavebox\mybox
-
-\newenvironment{aquote}[1]
-  {\savebox\mybox{#1}\begin{quotation}}
-  {\signed{\usebox\mybox}\end{quotation}}
-
-\newenvironment{tquote}[1]
-  {  {\bf #1} \begin{quotation} \\ }
-  { \end{quotation} }
-
-%% BOXES: http://tex.stackexchange.com/questions/83930/what-are-the-different-kinds-of-boxes-in-latex
-%% ENVIRONMENTS: https://www.sharelatex.com/learn/Environments
-
-\newenvironment{asciidocbox}
-  {\leftskip6em\rightskip6em\par}
-  {\par}
-
-\newenvironment{titledasciidocbox}[1]
-  {\leftskip6em\rightskip6em\par{\bf #1}\vskip-0.6em\par}
-  {\par}
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%% http://texblog.org/tag/rightskip/
-
-
-\newenvironment{preamble}
-  {}
-  {}
-
-%% http://tex.stackexchange.com/questions/99809/box-or-sidebar-for-additional-text
-%%
-\newenvironment{sidebar}[1][r]
-  {\wrapfigure{#1}{0.5\textwidth}\tcolorbox}
-  {\endtcolorbox\endwrapfigure}
-
-
-%%%%%%%%%%
-
-\newenvironment{comment*}
-  {\leftskip6em\rightskip6em\par}
-  {\par}
-
-  \newenvironment{remark*}
-  {\leftskip6em\rightskip6em\par}
-  {\par}
-
-

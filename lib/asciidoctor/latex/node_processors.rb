@@ -886,10 +886,10 @@ module Process
   private
 
   $colors = {
-    'red'    => "colorRed",
-    'blue'   => "colorBlue",
-    'green'  => "colorGreen",
-    'yellow' => "colorYellow"
+    'red'    => "adocMacroRed",
+    'blue'   => "adocMacroBlue",
+    'green'  => "adocMacroGreen",
+    'yellow' => "adocMacroYellow"
   }
 
   $alignments = {
