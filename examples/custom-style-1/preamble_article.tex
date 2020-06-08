@@ -1,0 +1,152 @@
+\documentclass[a4paper, 12pt, xcolor=table]{article}
+
+%
+% Example of own template
+%
+
+% Latex localisation
+\usepackage[french]{babel}
+\usepackage{fontspec}
+    \defaultfontfeatures{Ligatures=TeX}
+\usepackage[Latin,Greek]{ucharclasses}
+
+% Manage paper's geometry
+\usepackage{pdflscape}
+\usepackage{geometry}
+    \geometry{
+        a4paper,
+        left   = 20mm,
+        right  = 20mm,
+        top    = 20mm,
+        bottom = 30mm
+    }
+
+% Pages header and footer
+\usepackage{fancyhdr}                                                   %
+    \newcommand{\doctitle}{}
+    \pagestyle{fancy}
+    \fancyfoot[C]{~}
+    \fancyfoot[R]{\textcolor{red}{\footnotesize\thepage~/~\pageref{LastPage}~}}
+    \fancyfoot[L]{\textcolor{blue}{\doctitle}}
+    \fancyhead[C]{}
+    \fancyhead[L]{}
+    \fancyhead[R]{}
+    \renewcommand{\headrulewidth}{0cm}
+    \renewcommand{\footrulewidth}{0.01cm}
+
+% Paragraph indentation and line spacing
+\usepackage{setspace}
+    \setstretch{1.1}
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{1ex plus 0.5ex minus 0.2ex}
+
+% Choose the font (only with XeTeX)
+\usepackage{lmodern}
+%\usepackage[default]{sourcesanspro}
+%\usepackage[light]{roboto}
+%\usepackage[sfdefault]{overlock}
+%\usepackage[defaultfam,extralight,tabular,lining,alternates]{montserrat}
+%\usepackage[default,angular]{comicneue}
+%\usepackage{cmbright}
+%\usepackage[lf]{electrum}
+
+% Colors in the document
+\usepackage{color}
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+    \definecolor{headcol}{HTML}{202060}
+
+% Links appearance
+\usepackage{hyperref}
+    \hypersetup{pdfstartview=FitH}
+    \hypersetup{colorlinks=true}
+    \hypersetup{linkcolor=black!80!blue}
+    \hypersetup{anchorcolor=black!80!blue}
+    \hypersetup{citecolor=black!80!blue}
+    \hypersetup{filecolor=black!80!blue}
+
+% Page references
+\usepackage{lastpage}
+
+% Table and array
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{multirow}
+    %\rowcolors{1}{gray!10}{white}
+    \newcolumntype{C}[1]{>{\centering\arraybackslash\small}p{#1}}
+    \renewcommand{\arraystretch}{1.2}
+\usepackage{booktabs} % To thicken table lines
+
+% Draw in documents
+\usepackage{tikz}
+    \usetikzlibrary{positioning}
+    \usetikzlibrary{backgrounds}
+    \usetikzlibrary{fit}
+    \usetikzlibrary{shapes.geometric}
+    \usetikzlibrary{mindmap,trees}
+    \usetikzlibrary{arrows,automata}
+
+% Produce nice boxes
+\usepackage{fancybox}
+\usepackage{framed}
+\usepackage[framemethod=TikZ]{mdframed}
+
+% Graphics
+\usepackage{wrapfig}
+\usepackage{graphicx}
+\usepackage{subcaption}
+    %% \DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+    \DeclareGraphicsExtensions{.png, .PNG, .jpg, .JPG, .pdf, .PDF}
+    \graphicspath{{./images/}}
+
+\usepackage{tcolorbox}
+
+% To use listings (lstlisting)
+\usepackage{listings}
+
+% Using pygment to highlight sources
+\usepackage{minted}
+    \usemintedstyle{tango}
+    \setminted{%
+        breaklines,                 % wrap long lines
+        fontsize=\footnotesize,     % source code font size
+        fontfamily=tt,              % Font type
+        linenos=true,               % Display line numbers
+        autogobble=true,            % Remove global indentation
+        startinline,                % Start in PHP mode for PHP sources
+        numbersep=1.5em,
+    }
+
+\BeforeBeginEnvironment{minted}{%
+    \begin{mdframed}%
+    [linecolor=gray!50, backgroundcolor=gray!5!white, roundcorner=5pt]
+    %[linecolor=gray!50, backgroundcolor=gray!5!black, roundcorner=5pt]
+}
+
+\AfterEndEnvironment{minted}{%
+    \end{mdframed}%
+}
+
+\newcommand{\inputmintedframed}[2]{%
+\begin{mdframed}%
+    [linecolor=gray!50, backgroundcolor=gray!5!white, roundcorner=5pt]
+    \inputminted{#1}{#2}
+\end{mdframed}    
+}
+
+% Put a border around verbatim environments and adapt vertical spacing
+\BeforeBeginEnvironment{verbatim}{%
+    \vspace{-1\baselineskip}
+    \begin{mdframed}%
+    [linecolor=gray!50, backgroundcolor=gray!5!white, roundcorner=5pt]
+    %[linecolor=gray!50, backgroundcolor=gray!5!black, roundcorner=5pt]
+}
+
+\AfterEndEnvironment{verbatim}{%
+    \end{mdframed}%
+    %\vspace{-1\baselineskip}
+}
+
+
+
+% Package to create our own environments
+\usepackage{environ}

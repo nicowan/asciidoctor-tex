@@ -1,0 +1,19 @@
+= Testing latex stylesheet
+:latextemplate:  custom-style-1
+
+// Empty document to test the latex preamble
+
+.Paragraphe with title
+This is the paragraph content
+
+
+NOTE: The note icon is in template dir
+
+CAUTION: The caution icon is in template/image dir
+
+
+[beurk]
+.This is the open block's title
+--
+This is an open block content of type beurk
+--

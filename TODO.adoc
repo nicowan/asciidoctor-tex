@@ -13,8 +13,13 @@ cd ..; gem build asciidoctor-latex.gemspec; gem install *.gem; cd examples
 == The todo list
 
 * Manage the ID in all block or inline elements
-* Include a list of custom environment in the latex preamble
-* Include a list of custom macros in the latex preamble
 * Unit testing for every node types
 * Support for different kind of document type (book, article and beamer)
-* Support for personal templates
+
+
+=== Manage the custom stylesheet
+
+The idea is to create one tex file for each macro or environement.
+The macro or env is defined in this files.
+It is included at the end of the preamble when used in the document.
+It is protected against double definition if already included in a custom preamble.
