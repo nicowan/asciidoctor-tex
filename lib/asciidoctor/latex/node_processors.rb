@@ -70,17 +70,18 @@ module TexUtilities
   def self.escape(str)
     coder  = HTMLEntities.new
     str = coder.decode str
-    str = str.gsub("{",     "\\{")
-    str = str.gsub("}",     "\\}")
-    str = str.gsub("&",     "\\\\&")
-    str = str.gsub("#",     "\\\\#")
-    str = str.gsub("%",     "\\%")
-    str = str.gsub("$",     "\\$")
-    str = str.gsub("_",     "\\_")
-    #str = str.gsub("\\", "\\\\\\")  # Do not work, it duplicates \ in latex commands
-    str = str.gsub("|",     "\\textbar{}")
-    str = str.gsub("~",     "\\textasciitilde{}")
-    str = str.gsub("^",     "\\textasciicircum{}")
+    # TODO: Use a special char for \ in latex commands
+    #str = str.gsub("\\",    macro("adocMacroBackslash",  ""))  # Does not work, it escapes the latex commands
+    str = str.gsub("{",     macro("adocMacroOpenBrace",  ""))
+    str = str.gsub("}",     macro("adocMacroCloseBrace", ""))
+    str = str.gsub("&",     macro("adocMacroAmperAnd",   ""))
+    str = str.gsub("#",     macro("adocMacroSharp",      ""))
+    str = str.gsub("%",     macro("adocMacroPercent",    ""))
+    str = str.gsub("$",     macro("adocMacroDollar",     ""))
+    str = str.gsub("_",     macro("adocMacroUnderscore", ""))
+    str = str.gsub("|",     macro("textbar",              ""))
+    str = str.gsub("~",     macro("textasciitilde",       ""))
+    str = str.gsub("^",     macro("textasciicircum",      ""))
   end
 
   def self.mathEscape(str)
