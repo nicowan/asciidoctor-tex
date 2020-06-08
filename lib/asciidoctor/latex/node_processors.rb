@@ -148,18 +148,32 @@ module TexUtilities
   end
 
   # Generate the liste of dummy definition for each environments use in the document
-  def self.writeEnvironmentDefinition()
+  def self.writeEnvironmentDefinition(templateDir)
     result =  "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n"
     result << "% Automatic generation of environments definition \n"
     result << "% These environments should be defined in your template \n"
     result << "% To get the better typesetting results\n\n"
 
     @definitions.each do |key, value|
-      if value['type'] == 'macro'
-        result << writeNewCommand(key, value['argCount'])
+
+      filename = File.join(templateDir, "#{key}.tex")
+      puts filename
+      if File.file?(filename)
+        # The macro has a definition in this template use it
+        result << File.open(filename, 'r') { |f| f.read }
+
       else
-        result << writeNewEnvironment(key, value['argCount'])
+        # Macro / Environment is not defined
+        # Include dummy definition to avoid compilation errors
+        warn "latex #{key} macro or environment not defined in the template, use the default one"
+
+        if value['type'] == 'macro'
+          result << writeNewCommand(key, value['argCount'])
+        else
+          result << writeNewEnvironment(key, value['argCount'])
+        end
       end
+
       result << "\n"
     end
 
@@ -217,7 +231,7 @@ module Process
       doc << $tex.macro( "date",   node.revdate)  + "\n"
 
       doc << "\n"
-      doc << $tex.writeEnvironmentDefinition()
+      doc << $tex.writeEnvironmentDefinition(templateDir)
 
       # Add the search path for the images for the document and for the template
       doc << "% ======================================================================\n"
