@@ -17,3 +17,7 @@ CAUTION: The caution icon is in template/image dir
 --
 This is an open block content of type beurk
 --
+
+<<<
+
+loreAd Lorem amet cillum non excepteur cillum pariatur in qui ad voluptate. Id ipsum cupidatat ex nostrud ut excepteur ea cupidatat. Do ut eiusmod nulla magna in duis labore eu nostrud officia. Ad anim ea adipisicing pariatur aliquip consectetur ullamco ea esse culpa id. Dolore cillum enim velit in ut eu dolor reprehenderit ut pariatur voluptate laboris nisi. Consequat nisi pariatur ut proident nostrud eu est ullamco veniam.
