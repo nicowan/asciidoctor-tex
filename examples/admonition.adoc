@@ -1,4 +1,5 @@
 // Admonition
+:icons: font
 
 TIP: This is a tip $_$
 and it continue here
