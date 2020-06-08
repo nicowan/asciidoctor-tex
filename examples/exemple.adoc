@@ -5,8 +5,9 @@ V1.0, 15 mai 2020
 :icons: font
 :source-highlighter: pygment
 :imagesdir: images
-:notitle:
-//:toc:
+//:notitle:
+:toc:
+:sectnums:
 :stem: latexmath
 
 == Mises en forme de base
@@ -122,6 +123,18 @@ Un paragraphe avec des mise en forme en ligne *gras*, _italique_, _*gras et ital
 | `$a !=  $b`  | valeurs sont différentes
 | `$a \<= $b`  | `a` est inférieur ou égal à `b`
 |====
+
+Voici un tableau construit à partir d'un CSV
+
+[%header,format=csv]
+|===
+Artist,Track,Genre
+Baauer,Harlem Shake,Hip Hop
+The Lumineers,Ho Hey,Folk Rock
+|===
+
+
+
 
 === Source code
 
