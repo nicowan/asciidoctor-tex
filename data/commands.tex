@@ -1,28 +1,39 @@
-% Commands for asciidoctor supports
-
-% Commands for colored inline text also used to color an entire paragraph
-%\newcommand{\adocMacroRed}[1]   {\textcolor{red}{#1}   }
-%\newcommand{\adocMacroBlue}[1]  {\textcolor{blue}{#1}  }
-%\newcommand{\adocMacroGreen}[1] {\textcolor{green}{#1} }
-%\newcommand{\adocMacroYellow}[1]{\textcolor{yellow}{#1}}
+% Definition of macros and environments used in asciidoctor document
+%
 
 
-% Create a title for a paragraph (or other?) blocks
+% Command for block marked as [.red] or inline as [red]
+\newcommand{\adocMacroRed}[1]{\textcolor{red}{#1}}
+
+
+% Command for block marked as [.blue] or inline as [blue]
+\newcommand{\adocMacroBlue}[1]{\textcolor{blue}{#1}}
+
+
+% Command for block marked as [.green] or inline as [green]
+\newcommand{\adocMacroGreen}[1]{\textcolor{green}{#1}}
+
+
+% Command for block marked as [.yellow] or inline as [yellow]
+\newcommand{\adocMacroYellow}[1]{\textcolor{yellow}{#1}}
+
+
+% Create a title for a paragraph and other blocks
 \newcommand{\adocMacroTitle}[1]{%
   \textbf{\textcolor{black!50!white}{#1}}\newline%
 }
 
 
-% Show menu entries
+% Macro for experimental "menu" command
 \newcommand{\adocMacroMenu}[1]{\ovalbox{\texttt{\textit{#1}}}}
 \newcommand{\adocMacroNextItem}{\textbf{ $>$ }}
 
 
-% Show keys
+% Macro for experimental "keyboard" command
 \newcommand{\adocMacroKbd}[1]{\ovalbox{\texttt{#1}}}
 
 
-% Shows buttons
+% Macro for experimental "button" command
 \newcommand{\adocMacroBtn}[1]{\ovalbox{\textbf{#1}}}
 
 
@@ -71,13 +82,12 @@
   \vspace{1em}
 }
 
+
 % Defines the adocEnvAdmonition environment
 % Takes one parameter : <iconname>
-%
-% Variables to compute the admonition text width
-\newdimen\admonitionImgWidth{}
-\newdimen\admonitionTxtWidth{}
-\newdimen\admonitionTmpWidth{}
+\newdimen\admonitionImgWidth{}    % Admonition image width
+\newdimen\admonitionTxtWidth{}    % Admonition text width
+\newdimen\admonitionTmpWidth{}    % Space between image and text
 \newenvironment{adocEnvAdmonition}[1]{
     % Placed at environment begin
     \settowidth{\admonitionImgWidth}{\includegraphics[width=1cm]{#1}}

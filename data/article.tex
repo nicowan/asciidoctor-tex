@@ -1,25 +1,25 @@
+% -----------------------------------------------------------------------------
+% This is the LaTeX preamble for article documents.
+% The purpose of this file is to include the required packages and set the
+% document's appearances.
+% It is not here to define commands to support Asciidoctor
 \documentclass[a4paper, 12pt, xcolor=table]{article}
 
 % Latex localisation
+% TODO: How can we adapt the language to the one specified in the adoc file
 \usepackage[french]{babel}
 \usepackage{fontspec}
     \defaultfontfeatures{Ligatures=TeX}
-\usepackage[Latin,Greek]{ucharclasses}
 
 % Manage paper's geometry
+% TODO: Nice if we could inject theses values from adoc file
 \usepackage{pdflscape}
 \usepackage{geometry}
-    \geometry{
-        a4paper,
-        left   = 20mm,
-        right  = 20mm,
-        top    = 20mm,
-        bottom = 30mm
-    }
+    \geometry{a4paper, left=20mm, right=20mm, top=20mm, bottom=30mm}
 
 % Pages header and footer
-\usepackage{fancyhdr}                                                   %
-    \newcommand{\doctitle}{}
+\usepackage{fancyhdr}
+    \newcommand{\doctitle}{}    % Avoids error when no title is defined
     \pagestyle{fancy}
     \fancyfoot[C]{~}
     \fancyfoot[R]{\footnotesize\thepage~/~\pageref{LastPage}~}
@@ -49,7 +49,6 @@
 % Colors in the document
 \usepackage{color}
 \usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
-    \definecolor{headcol}{HTML}{202060}
 
 % Links appearance
 \usepackage{hyperref}
@@ -67,19 +66,8 @@
 \usepackage{array}
 \usepackage{tabularx}
 \usepackage{multirow}
-    %\rowcolors{1}{gray!10}{white}
-    \newcolumntype{C}[1]{>{\centering\arraybackslash\small}p{#1}}
-    \renewcommand{\arraystretch}{1.2}
 \usepackage{booktabs} % To thicken table lines
-
-% Draw in documents
-\usepackage{tikz}
-    \usetikzlibrary{positioning}
-    \usetikzlibrary{backgrounds}
-    \usetikzlibrary{fit}
-    \usetikzlibrary{shapes.geometric}
-    \usetikzlibrary{mindmap,trees}
-    \usetikzlibrary{arrows,automata}
+    \renewcommand{\arraystretch}{1.2}
 
 % Produce nice boxes
 \usepackage{fancybox}
@@ -87,19 +75,18 @@
 \usepackage[framemethod=TikZ]{mdframed}
 
 % Graphics
-\usepackage{wrapfig}
 \usepackage{graphicx}
-\usepackage{subcaption}
     %% \DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
     \DeclareGraphicsExtensions{.png, .PNG, .jpg, .JPG, .pdf, .PDF}
     \graphicspath{{./images/}}
 
-\usepackage{tcolorbox}
 
 % To use listings (lstlisting)
+% TODO: Include only if lstlisting is used
 \usepackage{listings}
 
 % Using pygment to highlight sources
+% TODO: Include only if pygment is used
 \usepackage{minted}
     \usemintedstyle{tango}
     \setminted{%
@@ -112,22 +99,15 @@
         numbersep=1.5em,
     }
 
-\BeforeBeginEnvironment{minted}{%
-    \begin{mdframed}%
-    [linecolor=gray!50, backgroundcolor=gray!5!white, roundcorner=5pt]
-    %[linecolor=gray!50, backgroundcolor=gray!5!black, roundcorner=5pt]
-}
+    \BeforeBeginEnvironment{minted}{%
+        \begin{mdframed}%
+        [linecolor=gray!50, backgroundcolor=gray!5!white, roundcorner=5pt]
+        %[linecolor=gray!50, backgroundcolor=gray!5!black, roundcorner=5pt]
+    }
 
-\AfterEndEnvironment{minted}{%
-    \end{mdframed}%
-}
-
-\newcommand{\inputmintedframed}[2]{%
-\begin{mdframed}%
-    [linecolor=gray!50, backgroundcolor=gray!5!white, roundcorner=5pt]
-    \inputminted{#1}{#2}
-\end{mdframed}    
-}
+    \AfterEndEnvironment{minted}{%
+        \end{mdframed}%
+    }
 
 % Put a border around verbatim environments and adapt vertical spacing
 \BeforeBeginEnvironment{verbatim}{%
@@ -141,8 +121,6 @@
     \end{mdframed}%
     %\vspace{-1\baselineskip}
 }
-
-
 
 % Package to create our own environments
 \usepackage{environ}

@@ -92,7 +92,6 @@ module TexUtilities
     result = result.gsub("]", '〉')
   end
 
-
   def self.pushMacro(envName, argCount)
     # only push custom macros (starting with adocMacro)
     if envName.start_with?("adocMacro")
@@ -148,30 +147,19 @@ module TexUtilities
   end
 
   # Generate the liste of dummy definition for each environments use in the document
-  def self.writeEnvironmentDefinition(templateDir)
+  def self.writeEnvironmentDefinition()
     result =  "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n"
     result << "% Automatic generation of environments definition \n"
     result << "% These environments should be defined in your template \n"
     result << "% To get the better typesetting results\n\n"
 
     @definitions.each do |key, value|
+      # TODO: Scan the command.tex file from the template to detect undefined macros / env
 
-      filename = File.join(templateDir, "#{key}.tex")
-      puts filename
-      if File.file?(filename)
-        # The macro has a definition in this template use it
-        result << File.open(filename, 'r') { |f| f.read }
-
+      if value['type'] == 'macro'
+        result << writeNewCommand(key, value['argCount'])
       else
-        # Macro / Environment is not defined
-        # Include dummy definition to avoid compilation errors
-        warn "latex #{key} macro or environment not defined in the template, use the default one"
-
-        if value['type'] == 'macro'
-          result << writeNewCommand(key, value['argCount'])
-        else
-          result << writeNewEnvironment(key, value['argCount'])
-        end
+        result << writeNewEnvironment(key, value['argCount'])
       end
 
       result << "\n"
@@ -179,8 +167,6 @@ module TexUtilities
 
     return result
   end
-
-
 end
 
 module Process
@@ -211,27 +197,23 @@ module Process
       imagesDir = "." if imagesDir.nil?
 
       # Include the latex preamble (all the stuff before \begin{document})      
-      filePreamble = File.join(templateDir, "preamble_#{node.document.doctype}.tex")
+      filePreamble = File.join(templateDir, "#{node.document.doctype}.tex")
       doc << self.insertFile( filePreamble )
       doc << "\n"
 
-      # TODO : Remove the asciidoc_tex_macros.tex by a bunch of files with single macro definition
-      # TODO : Use the new files to define one macros
-      doc << "% ======================================================================\n"
-      doc << "% Macros and environments for asciidoc constructs\n"
-      fileCommands = File.join(templateDir, 'asciidoc_tex_macros.tex')
+      fileCommands = File.join(templateDir, 'commands.tex')
       doc << self.insertFile( fileCommands )
       doc << "\n"
 
       doc << "% ======================================================================\n"
-      doc << "% Front matter\n"
+      doc << "% Document's informations \n"
 
       doc << $tex.macro( "title",  node.doctitle) + "\n"
       doc << $tex.macro( "author", node.author)   + "\n"
       doc << $tex.macro( "date",   node.revdate)  + "\n"
 
       doc << "\n"
-      doc << $tex.writeEnvironmentDefinition(templateDir)
+      doc << $tex.writeEnvironmentDefinition()
 
       # Add the search path for the images for the document and for the template
       doc << "% ======================================================================\n"
