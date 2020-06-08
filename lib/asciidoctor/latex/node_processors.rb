@@ -944,7 +944,7 @@ module Process
 
   def self.insertTableOfContents(node)
     result = ""
-    if node.attributes['toc-placement'] != nil and node.attributes['toc-placement'] != 'macro'
+    if node.attributes['toc'] != nil and node.attributes['toc-placement'] != 'macro'
       result = "#{$tex.macro("tableofcontents")}\n"
     end
     return result
