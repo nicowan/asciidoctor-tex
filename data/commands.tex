@@ -28,23 +28,43 @@
 % Command for block marked as [.red] or inline as [red]
 \newcommand{\adocMacroRed}[1]{\textcolor{red}{#1}}
 
-
 % Command for block marked as [.blue] or inline as [blue]
 \newcommand{\adocMacroBlue}[1]{\textcolor{blue}{#1}}
-
 
 % Command for block marked as [.green] or inline as [green]
 \newcommand{\adocMacroGreen}[1]{\textcolor{green}{#1}}
 
-
 % Command for block marked as [.yellow] or inline as [yellow]
 \newcommand{\adocMacroYellow}[1]{\textcolor{yellow}{#1}}
-
 
 % Create a title for a paragraph and other blocks
 \newcommand{\adocMacroTitle}[1]{%
   \textbf{\textcolor{black!50!white}{#1}}\newline%
 }
+
+% -----------------------------------------------------------------------------
+% Styling array
+
+% Command to change table heading's background color
+\newcommand{\adocMacroTableHeadBack}{\rowcolor{green!50!white}}
+
+% Command to style the cells in table header
+\newcommand{\adocMacroTableHead}[1]{\textbf{#1}}
+
+% Command to change table footers's background color
+\newcommand{\adocMacroTableFootBack}{\rowcolor{blue!50!white}}
+
+% Command to style the cells in table footer
+\newcommand{\adocMacroTableFoot}[1]{\textbf{\textcolor{green}{#1}}}
+
+% Command to change the background color for even lines
+\newcommand{\adocMacroTableEvenBack}{\rowcolor{red!10!white}}
+
+% Command to change the background color for odd lines
+\newcommand{\adocMacroTableOddBack}{\rowcolor{red!20!white}}
+
+
+
 
 
 % Macro for experimental "menu" command

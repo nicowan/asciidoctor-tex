@@ -1,0 +1,16 @@
+// CSV Table with header
+
+[options="header,footer", grid=all, stripes=even]
+|===
+| Artist            | Track         | Genre
+| Baauer            | Harlem Shake  | Hip Hop
+| The Lumineers     | Ho Hey        | Folk Rock
+| Artist            2+| Track and Genre
+|===
+
+[%header,format=csv]
+|===
+Artist,Track,Genre
+Baauer,Harlem Shake,Hip Hop
+The Lumineers,Ho Hey,Folk Rock
+|===

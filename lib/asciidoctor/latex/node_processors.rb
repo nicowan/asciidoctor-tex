@@ -501,8 +501,10 @@ module Process
   # Table export
 
   def self.table(node)
-    # TODO: Insert header and footer row
     result = ""
+
+    # Manage stripes
+    striped = (node.attributes['stripes'] == 'odd') || (node.attributes['stripes'] == 'even')
 
     grid  = !(node.attributes['grid']  == "none")
     # TODO: Manage frame = topbot, sides
@@ -513,12 +515,15 @@ module Process
 
     # Create a 2D array wit all cells
     table = self.tableCreateData(node, columns)
+    debugTable(table)
 
-    result = ""
+    result  = ""
+    oddLine = true
 
     table.each_with_index do |row, y|
         txtCell   = []
         txtBorder = []
+
         row.each_with_index do |cell, x|
           txtCell   << cell.getContent(grid, frame)
           txtBorder << cell.getBorder(grid, frame)
@@ -528,8 +533,20 @@ module Process
         txtCell   = txtCell.filter_map{   |cell| cell unless cell.nil?}
         txtBorder = txtBorder.filter_map{ |cell| cell unless cell.nil?}
 
+        if row[0].heading == :head
+          background = "#{$tex.macro('adocMacroTableHeadBack')}\n"
+        elsif row[0].heading == :foot
+          background = "#{$tex.macro('adocMacroTableFootBack')}\n"
+        else
+          if striped
+            background = "#{$tex.macro('adocMacroTableOddBack')}\n"  if oddLine
+            background = "#{$tex.macro('adocMacroTableEvenBack')}\n" unless oddLine
+            oddLine = !oddLine
+          end
+        end
+
         # Prints the result
-        result << "#{txtCell.join(" &\n")} \\\\ \n#{txtBorder.join(" ")} \n"
+        result << "#{background}#{txtCell.join(" &\n")} \\\\ \n#{txtBorder.join(" ")} \n"
     end # each row
 
     result = "\\hline\n#{result}\\hline\n" if frame
@@ -562,32 +579,44 @@ module Process
       colWidth = col.attributes['width'].to_f / sumOfWidth - colSpacing
       colWidth = 0.05 if colWidth < 0
       colWidth = colWidth * tableWidth / 100
-      result << colWidth.round(3)
+      result << colWidth.round(5)
     }
 
     return result
   end
 
   def self.tableCreateData(node, columns)
-    tabular = Array.new(node.rows.body.count) {
+    totalLines = node.rows.head.count + node.rows.body.count + node.rows.foot.count
+
+    tabular = Array.new(totalLines) {
       Array.new(node.columns.count, nil)
     }
 
-    # Fill the 2D array with the table cells
-    node.rows.body.each_with_index do |row, y|
-      trueX = 0
+    y = 0
 
-      row.each_with_index do |cell, x|
-        # Skip rowspanned cells
-        while tabular[y][trueX] != nil
-          trueX += 1
-        end
+    # For each section in table do
+    node.rows.to_h.each do |tsec, rows|
+      next if rows.empty?
 
-        data = LatexCell.new(cell)
-        trueX = data.fillArray(tabular, trueX, y, columns)
-      end # each cells
-    end # each rows
+      # For each rows in the section do ...
+      rows.each do |row|
+        trueX = 0
 
+        # For each cell in the row do ...
+        row.each do |cell|
+          # Skip rowspanned cells
+          while tabular[y][trueX] != nil
+            trueX += 1
+          end
+
+          data = LatexCell.new(cell, tsec)
+          trueX = data.fillArray(tabular, trueX, y, columns)
+        end # for each cells
+        # Count the rows in the table
+        y += 1
+      end # for each rows
+
+    end # for each section
     return tabular
   end
 
@@ -606,9 +635,9 @@ module Process
   end
 
   class LatexCell
-    attr_accessor :rowspan, :colspan, :repeated, :content, :x, :y, :width, :halign, :valign, :maxX, :maxY
+    attr_accessor :rowspan, :colspan, :repeated, :content, :x, :y, :width, :halign, :valign, :maxX, :maxY, :heading
 
-    def initialize(node)
+    def initialize(node, heading)
       self.rowspan  = node.rowspan.nil? ? 1 : node.rowspan;
       self.colspan  = node.colspan.nil? ? 1 : node.colspan;
       self.content  = node.content
@@ -620,8 +649,12 @@ module Process
       self.width = 0
       self.x = 0
       self.y = 0
-      self.maxY = node.parent.parent.rows.body.count - 1
+      self.maxY = node.parent.parent.rows.head.count + 
+                  node.parent.parent.rows.body.count + 
+                  node.parent.parent.rows.foot.count - 1
+
       self.maxX = node.parent.parent.columns.count - 1
+      self.heading = heading
     end
 
     def write(tabular, x, y)
@@ -635,6 +668,10 @@ module Process
       (x..x + self.colspan - 1).each { |lx|
         self.width += columns[lx]
       }
+
+      # Add the column spacing when colspan si bigger than 1 to avoid background colors problems 
+      # TODO: Use the same constant as in the rest of table converter
+      self.width += (self.colspan - 1) * 0.025
 
       # Fill the tabular with the cells
       (x..x + self.colspan - 1).each do |lx|
@@ -666,6 +703,10 @@ module Process
     def getContent(grid, frame)
       result = self.content
       if result != nil
+        # Manage headings
+        result = $tex.macro("adocMacroTableHead", result) if self.heading == :head
+        result = $tex.macro("adocMacroTableFoot", result) if self.heading == :foot
+
         # Manage the horizontal alignement (insert raggedleft or centering)
         if    self.halign == 'right';  result = "#{$tex.macro('raggedleft')} #{result}"
         elsif self.halign == 'center'; result = "#{$tex.macro('centering')} #{result}"
@@ -691,9 +732,8 @@ module Process
         left = '|' if ((frame and (self.x == 0)) or (grid  and (self.x != 0)))
 
         # Draw the right border of a cell
-        xmax  = 3 
-        right = ' '
-        right = '|' if (frame and (self.x == self.maxX))
+        isLastCell = ((self.x == self.maxX) || (self.x + self.colspan - 1 == self.maxX && self.colspan > 1))
+        right = (frame and isLastCell) ? '|' : ' '
 
         # The column specifier with left and right border
         colType = "#{left}#{colType}#{right}"
