@@ -66,88 +66,71 @@
 
 
 
-
 % Macro for experimental "menu" command
-\newcommand{\adocMacroMenu}[1]{\ovalbox{\texttt{\textit{#1}}}}
 \newcommand{\adocMacroNextItem}{\textbf{ $>$ }}
-
-
-% Macro for experimental "keyboard" command
-\newcommand{\adocMacroKbd}[1]{\ovalbox{\texttt{#1}}}
+\newcommand{\adocMacroMenu}[1]{\tcbox[mnuMacroStyle]{\textit{#1}}}
+\tcbset{mnuMacroStyle/.style={size=small,sharp corners,
+  colback=black!5!white, boxrule=0, colframe=white, nobeforeafter, tcbox raise base,
+  enlarge left by=0mm}}
 
 
 % Macro for experimental "button" command
-\newcommand{\adocMacroBtn}[1]{\ovalbox{\textbf{#1}}}
+%\newcommand{\adocMacroBtn}[1]{\ovalbox{\textbf{#1}}}
+\newcommand{\adocMacroKbd}[1]{\tcbox[kbdMacroStyle]{\textbf{\texttt{#1}}}}
+\tcbset{kbdMacroStyle/.style={size=small,sharp corners,
+  colback=black!5!white, colframe=black!25!white, nobeforeafter, tcbox raise base,
+  enlarge left by=0mm}}
+
+
+% Macro for experimental "button" command
+%\newcommand{\adocMacroBtn}[1]{\ovalbox{\textbf{#1}}}
+\newcommand{\adocMacroBtn}[1]{\tcbox[btnMacroStyle]{\textbf{#1}}}
+\tcbset{btnMacroStyle/.style={size=small, colback=black!5!white,
+  colframe=black!25!white, nobeforeafter, tcbox raise base}}
+
 
 
 % Defines the adocEnvQuote environment
 % Takes 2 parameters : <Title> and <Attribution>
 \newcommand{\adocQuoteAttribution}{~}
 \newenvironment{adocEnvQuote}[2]{%
-    % Placed at environment begin
-    \renewcommand{\adocQuoteAttribution}{#2}%
-    \begin{quotation}
-      \hspace{-7mm}
-      {\Huge\bf"}
-      \def\temp{#1}\ifx\temp\empty%
-        % Nothing here
-      \else
-        \adocMacroTitle{#1}
-      \fi
+  \renewcommand{\adocQuoteAttribution}{#2}%
+
+  \begin{tcolorbox}[title={#1}, boxrule=0, opacityframe=0.25, colback=white, lefthand width=1cm, sidebyside, sidebyside gap=0mm,  sidebyside align=top seam, lower separated=false]
+    \includegraphics[height=1em]{open-quotation}%
+    \tcblower
 }{%
-  % placed end of environnement
 
-  \hfill\textit{\adocQuoteAttribution}
-  \end{quotation}
-  \vspace{1em}
+    \ifx\adocQuoteAttribution\empty \else
+      \hfill\textit{\adocQuoteAttribution}
+    \fi
+    \end{tcolorbox}
 }
-
 
 % Defines the adocEnvVerse environment
 % Takes 2 parameters : <Title> and <Attribution>
 \newcommand{\adocVerseAttribution}{~}
 \newenvironment{adocEnvVerse}[2]{%
-    % Placed at environment begin
-    \renewcommand{\adocVerseAttribution}{#2}%
-    \begin{quotation}
-      \hspace{-7mm}
-      {\Huge\bf"}
-      \def\temp{#1}\ifx\temp\empty%
-        % Nothing here
-      \else
-        \adocMacroTitle{#1}
-      \fi
-}{%
-  % placed end of environnement
+  \renewcommand{\adocVerseAttribution}{#2}%
 
-  \hfill\textit{\adocVerseAttribution}
-  \end{quotation}
-  \vspace{1em}
+  \begin{tcolorbox}[title={#1}, boxrule=0, opacityframe=0.25, colback=white, lefthand width=1cm, sidebyside, sidebyside gap=0mm,  sidebyside align=top seam, lower separated=false]
+    \includegraphics[height=1em]{open-quotation}%
+    \tcblower
+}{%
+
+    \ifx\adocQuoteAttribution\empty \else
+      \hfill\textit{\adocVerseAttribution}
+    \fi
+    \end{tcolorbox}
 }
 
-
 % Defines the adocEnvAdmonition environment
-% Takes one parameter : <iconname>
-\newdimen\admonitionImgWidth{}    % Admonition image width
-\newdimen\admonitionTxtWidth{}    % Admonition text width
-\newdimen\admonitionTmpWidth{}    % Space between image and text
 \newenvironment{adocEnvAdmonition}[1]{
-    % Placed at environment begin
-    \settowidth{\admonitionImgWidth}{\includegraphics[width=1cm]{#1}}
-    \setlength{\admonitionTxtWidth}{-\admonitionImgWidth}
-    \settowidth{\admonitionTmpWidth}{~~{\color{black!10}\vrule width 0.1mm}~~~~}
-    \setlength{\admonitionTmpWidth}{-\admonitionTmpWidth}
-    \addtolength{\admonitionTxtWidth}{\linewidth}
-    \addtolength{\admonitionTxtWidth}{\admonitionTmpWidth}
-    \begin{minipage}[c]{\admonitionImgWidth}%
-        \includegraphics[width=1cm]{#1}
-    \end{minipage}%
-    ~~{\color{black!10}\vrule width 0.1mm}~~~~
-    \begin{minipage}[c]{\admonitionTxtWidth}%
+  \begin{tcolorbox}[boxrule=0, opacityframe=0.25, colback=white, sidebyside, lefthand width=1.5cm, , lower separated=false]
+    \includegraphics[width=\linewidth]{#1}
+    \tcblower
 }{
-    % placed end of environnement
-    \end{minipage}
-    \newline
+  \end{tcolorbox}  
 }
 
 
