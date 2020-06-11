@@ -51,17 +51,24 @@ module TexUtilities
     "\n#{self.begin(env)}〈#{opt}〉#{braces *args}\n#{body}\n#{self.end(env)}\n"
   end
 
+  # map '_' to '-' and prefix by 'x' if the leading character is '-'
+  def self.normalize(str)
+    str = str.gsub('_', '-')
+    if str[0] == '-'
+      'x'+str
+    else
+      str
+    end
+  end
+
   # normalize the name because it is an id
   # and so frequently contains underscores
   def self.hypertarget(name, text)
-    if text
-     # text = text.rstrip.chomp
-    end
     if name
-      self.macro("hypertarget", name.tex_normalize, text)
+      self.macro("hypertarget", $tex.normalize(name), text)
       #"\\hypertarget《#{name.tex_normalize}》《#{text}》"
     else
-      self.macro("hypertarget", "no-id".tex_normalize, text)
+      self.macro("hypertarget", "no-id", text)
       #"\\hypertarget《'NO-ID'》《#{text}》"
       # FIXME: why do we need this branch?
     end
@@ -93,11 +100,20 @@ module TexUtilities
     result = result.gsub("]", '〉')
   end
 
+  def self.definedMacro(name)
+    if name.start_with?("adocMacro") || name.start_with?("adocEnv")
+      if @definitions[name] != nil
+        @definitions[name]['defined'] = true
+      end
+    end
+  end
+
   def self.pushMacro(envName, argCount)
     # only push custom macros (starting with adocMacro)
     if envName.start_with?("adocMacro")
       @definitions[envName] = {
         'type'     => 'macro',
+        'defined'  => false,
         'argCount' => argCount,
         'optCount' => 0
       }
@@ -109,6 +125,7 @@ module TexUtilities
     if envName.start_with?("adocEnv")
       @definitions[envName] = {
         'type'     => 'environment',
+        'defined'  => false,
         'argCount' => argCount,
         'optCount' => 0
       }
@@ -157,13 +174,15 @@ module TexUtilities
     @definitions.each do |key, value|
       # TODO: Scan the command.tex file from the template to detect undefined macros / env
 
-      if value['type'] == 'macro'
-        result << writeNewCommand(key, value['argCount'])
-      else
-        result << writeNewEnvironment(key, value['argCount'])
-      end
+      unless value['defined']
+        if value['type'] == 'macro'
+          result << writeNewCommand(key, value['argCount'])
+        else
+          result << writeNewEnvironment(key, value['argCount'])
+        end
 
-      result << "\n"
+        result << "\n"
+      end
     end
 
     return result
@@ -213,6 +232,8 @@ module Process
       doc << $tex.macro( "author", node.author)   + "\n"
       doc << $tex.macro( "date",   node.revdate)  + "\n"
 
+      self.extractDefinedCommands(doc)
+
       doc << "\n"
       doc << $tex.writeEnvironmentDefinition()
 
@@ -242,6 +263,19 @@ module Process
 
     return doc
   end
+
+  def self.extractDefinedCommands(doc)
+    pattern = /\\newcommand\{\\(.*?)\}/
+    doc.scan(pattern) do |match|
+      $tex.definedMacro(match[0])
+    end
+
+    pattern = /\\newenvironment\{(.*?)\}/
+    doc.scan(pattern) do |match|
+      $tex.definedMacro(match[0])
+    end
+  end
+
 
   def self.section(node)
     tocentry = "";
