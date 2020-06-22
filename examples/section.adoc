@@ -3,8 +3,13 @@
 :toc:
 
 == level 1
+Go to section 2 <<bookmark_section_2>>
+
 === level 2
+
+[#bookmark_section_1_sub3]
 ==== level 3
+
 ===== level 4
 ====== level 5
 === level 2
@@ -12,9 +17,10 @@
 ===== level 4
 ====== level 5
 
-[discrete]
+[#bookmark_floating_title, discrete]
 == Not in TOC (floating heading)
 
+[[bookmark_section_2]]
 === level 2
 ==== level 3
 ===== level 4
@@ -23,3 +29,4 @@
 ==== level 3
 ===== level 4
 ====== level 5
+Return to <<bookmark_section_1_sub3>>

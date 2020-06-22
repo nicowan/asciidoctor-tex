@@ -1,3 +1,4 @@
+% -----------------------------------------------------------------------------
 % Definition of macros and environments used in asciidoctor document
 %
 
@@ -41,6 +42,16 @@
 \newcommand{\adocMacroTitle}[1]{%
   \textbf{\textcolor{black!50!white}{#1}}\newline%
 }
+
+% -----------------------------------------------------------------------------
+% Let's go to a target and get its pagenumber
+
+\newcommand{\adocTarget}[2]{%
+  \phantomsection%
+  \label{#1}%
+  \hypertarget{#1}{#2}%
+}
+
 
 % -----------------------------------------------------------------------------
 % Styling array

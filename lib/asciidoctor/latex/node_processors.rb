@@ -53,6 +53,7 @@ module TexUtilities
 
   # map '_' to '-' and prefix by 'x' if the leading character is '-'
   def self.normalize(str)
+    str = str.gsub('#', '')
     str = str.gsub('_', '-')
     if str[0] == '-'
       'x'+str
@@ -65,12 +66,10 @@ module TexUtilities
   # and so frequently contains underscores
   def self.hypertarget(name, text)
     if name
-      self.macro("hypertarget", $tex.normalize(name), text)
-      #"\\hypertarget《#{name.tex_normalize}》《#{text}》"
+      self.macro("adocTarget", $tex.normalize(name), text)
     else
-      self.macro("hypertarget", "no-id", text)
-      #"\\hypertarget《'NO-ID'》《#{text}》"
       # FIXME: why do we need this branch?
+      self.macro("adocTarget", "no-id", text)
     end
   end
 
@@ -276,7 +275,6 @@ module Process
     end
   end
 
-
   def self.section(node)
     tocentry = "";
 
@@ -297,8 +295,13 @@ module Process
       section << "*" 
     end
 
+    # Add an anchor if an id is given
+    anchor = ""
+    anchor = $tex.hypertarget($tex.normalize(node.id), "") if node.id
+
     # Generate the section's begin, content and end
-    result  = $tex.macro(section, $tex.escape(node.title)) + "\n"
+    result  = anchor
+    result << $tex.macro(section, $tex.escape(node.title)) + "\n"
     result << tocentry
     result << node.content
     #result << "% end #{section}\n"
@@ -329,7 +332,7 @@ module Process
 
     # Add an anchor if an id is given
     anchor = ""
-    anchor = $tex.macro('hypertarget', node.id, "") if node.id
+    anchor = $tex.hypertarget(node.id, "") if node.id
 
     return "#{anchor}#{title}#{content}\n\n"
   end
@@ -903,7 +906,11 @@ module Process
         # Not sure I will implement this in the LaTeX backend because for me
         # it is useless to link to title with the title content what hapens when 
         # the title text changes???
-        $tex.macro('hyperlink', node.target.tex_normalize, node.text || node.attributes['path'] || "")
+        #$tex.macro('hyperlink', node.target.tex_normalize, node.text || node.attributes['path'] || "")
+        reference =  $tex.normalize(node.target)
+        text = "page #{$tex.macro("pageref", reference)}"
+        #text = node.text if node.text != ""
+        $tex.macro('hyperlink', reference, text)
 
       when :link
         target = node.target
@@ -911,14 +918,21 @@ module Process
         if target.include? "http:" or target.include? "https:"
           $tex.macro('href', target, node.text)
         else
-          $tex.macro('hyperlink', node.target.tex_normalize, node.text)
+          reference =  $tex.normalize(node.target)
+          text = "page #{$tex.macro("pageref", reference)}"
+          #text = node.text if node.text != ""
+          $tex.macro('hyperlink', reference, text)
         end
 
       when :ref
-        $tex.hypertarget(node.id, "")
+        reference =  $tex.normalize(node.id)
+        text = "page #{$tex.macro("pageref", reference)}"
+        $tex.hypertarget(node.id, text)
 
       when :bibref
-        $tex.hypertarget(node.id, (node.reftext || node.id))
+        reference =  $tex.normalize(node.id)
+        text = "page #{$tex.macro("pageref", reference)}"
+        $tex.hypertarget(node.id, text)
 
       else
         warn %(unknown anchor type: #{node.type.inspect})
