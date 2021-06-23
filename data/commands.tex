@@ -107,7 +107,7 @@
 \newenvironment{adocEnvQuote}[2]{%
   \renewcommand{\adocQuoteAttribution}{#2}%
 
-  \begin{tcolorbox}[title={#1}, boxrule=0, opacityframe=0.25, colback=white, lefthand width=1cm, sidebyside, sidebyside gap=0mm,  sidebyside align=top seam, lower separated=false]
+  \begin{tcolorbox}[title={#1}, boxrule=0pt, opacityframe=0.0, colback=white, lefthand width=1cm, sidebyside, sidebyside gap=0mm,  sidebyside align=top seam, lower separated=false]
     \includegraphics[height=1em]{open-quotation}%
     \tcblower
 }{%
@@ -124,7 +124,7 @@
 \newenvironment{adocEnvVerse}[2]{%
   \renewcommand{\adocVerseAttribution}{#2}%
 
-  \begin{tcolorbox}[title={#1}, boxrule=0, opacityframe=0.25, colback=white, lefthand width=1cm, sidebyside, sidebyside gap=0mm,  sidebyside align=top seam, lower separated=false]
+  \begin{tcolorbox}[title={#1}, boxrule=0pt, opacityframe=0.0, colback=white, lefthand width=1cm, sidebyside, sidebyside gap=0mm,  sidebyside align=top seam, lower separated=false]
     \includegraphics[height=1em]{open-quotation}%
     \tcblower
 }{%
@@ -137,12 +137,21 @@
 
 % Defines the adocEnvAdmonition environment
 \newenvironment{adocEnvAdmonition}[1]{
-  \begin{tcolorbox}[boxrule=0, opacityframe=0.25, colback=white, sidebyside, lefthand width=1.5cm, , lower separated=false]
+  \begin{tcolorbox}[boxrule=0pt, opacityframe=0.0, colback=white!95!gray, sidebyside, lefthand width=1.5cm, lower separated=false]
     \includegraphics[width=\linewidth]{#1}
     \tcblower
 }{
   \end{tcolorbox}  
 }
+
+% Defines the adocEnvFrame environment (for beamer documents)
+\newenvironment{adocEnvFrame}[1]{
+  \begin{frame}{#1}
+}{
+  \end{frame}  
+}
+
+
 
 
 

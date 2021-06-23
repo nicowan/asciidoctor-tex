@@ -738,7 +738,7 @@ module Process
     end
 
     def getContent(grid, frame)
-      result = self.content
+      result = self.content.strip
       if result != nil
         # Manage headings
         result = $tex.macro("adocMacroTableHead", result) if self.heading == :head
@@ -1005,6 +1005,7 @@ module Process
 
   $headings = {
     'article' => [ 'part', 'section', 'subsection', 'subsubsection', 'paragraph' ],
+    'beamer'  => [ 'part', 'section', 'subsection', 'subsubsection', 'paragraph' ],
     'book'    => [ 'part', 'chapter', 'section', 'subsection', 'subsubsection', 'paragraph' ]
   }
 

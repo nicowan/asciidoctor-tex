@@ -3,32 +3,13 @@
 % The purpose of this file is to include the required packages and set the
 % document's appearances.
 % It is not here to define commands to support Asciidoctor
-\documentclass{beamer}
+\documentclass[10pt,xcolor={table,usenames,dvipsnames,svgnames}]{beamer}
 
 % Latex localisation
 % TODO: How can we adapt the language to the one specified in the adoc file
 \usepackage[french]{babel}
 \usepackage{fontspec}
     \defaultfontfeatures{Ligatures=TeX}
-
-% Manage paper's geometry
-% TODO: Nice if we could inject theses values from adoc file
-\usepackage{pdflscape}
-\usepackage{geometry}
-    \geometry{a4paper, left=20mm, right=20mm, top=20mm, bottom=30mm}
-
-% Pages header and footer
-\usepackage{fancyhdr}
-    \newcommand{\doctitle}{}    % Avoids error when no title is defined
-    \pagestyle{fancy}
-    \fancyfoot[C]{~}
-    \fancyfoot[R]{\footnotesize\thepage~/~\pageref{LastPage}~}
-    \fancyfoot[L]{\doctitle}
-    \fancyhead[C]{}
-    \fancyhead[L]{}
-    \fancyhead[R]{}
-    \renewcommand{\headrulewidth}{0cm}
-    \renewcommand{\footrulewidth}{0.01cm}
 
 % Paragraph indentation and line spacing
 \usepackage{setspace}
@@ -48,7 +29,7 @@
 
 % Colors in the document
 \usepackage{color}
-\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+%\usepackage[]{xcolor}
 
 % Links appearance
 \usepackage{hyperref}

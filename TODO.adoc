@@ -12,8 +12,9 @@ cd ..; gem build asciidoctor-latex.gemspec; gem install *.gem; cd examples
 
 == The todo list
 
-* Manage the ID in all block or inline elements
-* Unit testing for every node types
+* Manage the ID in all block types
+* Manage the ID in inline elements
+* Manage title  in all block types
 * Support for beamer document type
 
-
+* Unit testing for every node types
