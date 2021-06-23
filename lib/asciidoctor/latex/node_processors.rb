@@ -398,7 +398,7 @@ module Process
     language = "text" if language == nil or language == ""
 
     case node.document.attributes['source-highlighter']
-      when "pygment"
+      when "pygments"
         result << $tex.env("minted", language, node.content)
   
       when "lstlisting"

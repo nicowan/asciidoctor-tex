@@ -3,7 +3,7 @@ Nicolas Wanner
 V1.0, 15 mai 2020
 :doctype: article
 :icons: font
-:source-highlighter: pygment
+:source-highlighter: pygments
 :imagesdir: images
 //:notitle:
 :toc:

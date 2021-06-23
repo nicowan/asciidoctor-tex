@@ -1,4 +1,5 @@
-:source-highlighter: pygment
+:source-highlighter: pygments
+
 
 [source, html]
 ----
