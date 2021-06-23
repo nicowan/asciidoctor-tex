@@ -20,6 +20,11 @@ James Carlson
 
 == Introduction
 
+Installing asciidoctor from source code
+
+gem build asciidoctor-latex.gemspec
+gem install *.gem
+
 Asciidoctor LaTeX defines an extended syntax for the AsciiDoc markup language (AsciiDoc-LaTeX) that closely parallels LaTeX for inline and display mathematical formulas and for environments.
 Documents written in this extended markup language can be converted into HTML or LaTeX:
 

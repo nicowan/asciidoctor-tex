@@ -1,0 +1,73 @@
+= Produce LaTeX beamer with Asciidoctor
+:doctype: beamer
+:source-highlighter: pygments
+:sectnums:
+
+== First slide-show section
+
+
+=== Introduction
+
+* Asciidoctor can be used to make presentation
+
+* Asciidoctor-Latex is able to produce latex beamer code
+
+* The result is nice looking
+
+
+=== Admonitions
+
+* Admonitions are beautiful
+
+* Admonitions are addictive
+
+* Admonitions are unique
+
+[NOTE]
+This is an note to better understand the slide...
+
+
+=== Tables
+
+|===
+| Lastname  | Firstname     | Age
+| Timme     | Vincent       | 18
+| Aupikeur  | Marthe        | 23
+| DeNeskafé | Laure         | 45 
+|===
+
+=== Code source
+
+[source, js]
+----
+function onClick(event) {
+    let target = event.target;
+    target.innerHTML += "Clicked<br>";
+}
+----
+
+
+
+=== Pseudo two columns
+
+[cols="3a,7a", frame=none, grid=none]
+|===
+| image::objectif.png[width=25%]
+| 
+* hahaha
+* hihihi
+* hohoho
+* huhuhu
+|===
+
+== Second slide-show section
+
+=== Conclusion
+
+* Asciidoctor and LaTeX are nice
+
+* Each one in its domain
+
+* Combine them and you will produce nice documents
+
+image::cc-by-nc-sa.jpg[width=25%, role=center]

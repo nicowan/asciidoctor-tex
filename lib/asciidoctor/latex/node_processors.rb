@@ -285,26 +285,31 @@ module Process
     if section == nil
       section = $headings[node.document.doctype][-1].dup;
       warn "Latex #{node.document.doctype} does not support " +
-           "heading level #{node.level}, uses #{section} instead"
+          "heading level #{node.level}, uses #{section} instead"
     end
 
-    unless node.document.attributes["sectnums"]
-      # Add the entry in the table of content 
-      tocentry = $tex.macro("addcontentsline", "toc", section, $tex.escape(node.title)) + "\n"
-      # Add a star at the end when not numbered
-      section << "*" 
+    if section == 'frame'
+      # Generate the section's begin, content and end
+      result  = $tex.env_opt(section, "fragile", $tex.escape(node.title), node.content)
+    else
+      unless node.document.attributes["sectnums"]
+        # Add the entry in the table of content 
+        tocentry = $tex.macro("addcontentsline", "toc", section, $tex.escape(node.title)) + "\n"
+        # Add a star at the end when not numbered
+        section << "*" 
+      end
+
+      # Add an anchor if an id is given
+      anchor = ""
+      anchor = $tex.hypertarget($tex.normalize(node.id), "") if node.id
+
+      # Generate the section's begin, content and end
+      result  = anchor
+      result << $tex.macro(section, $tex.escape(node.title)) + "\n"
+      result << tocentry
+      result << node.content
+      #result << "% end #{section}\n"
     end
-
-    # Add an anchor if an id is given
-    anchor = ""
-    anchor = $tex.hypertarget($tex.normalize(node.id), "") if node.id
-
-    # Generate the section's begin, content and end
-    result  = anchor
-    result << $tex.macro(section, $tex.escape(node.title)) + "\n"
-    result << tocentry
-    result << node.content
-    #result << "% end #{section}\n"
 
     return result
   end
@@ -1005,7 +1010,7 @@ module Process
 
   $headings = {
     'article' => [ 'part', 'section', 'subsection', 'subsubsection', 'paragraph' ],
-    'beamer'  => [ 'part', 'section', 'subsection', 'subsubsection', 'paragraph' ],
+    'beamer'  => [ 'part', 'section', 'frame', 'textbf' ],
     'book'    => [ 'part', 'chapter', 'section', 'subsection', 'subsubsection', 'paragraph' ]
   }
 

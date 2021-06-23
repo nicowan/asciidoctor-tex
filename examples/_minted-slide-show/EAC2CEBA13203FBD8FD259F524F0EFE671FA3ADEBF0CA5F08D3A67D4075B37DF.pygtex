@@ -1,0 +1,6 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k+kd}{function} \PYG{n+nx}{onClick}\PYG{p}{(}\PYG{n+nx}{event}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+    \PYG{k+kd}{let} \PYG{n+nx}{target} \PYG{o}{=} \PYG{n+nx}{event}\PYG{p}{.}\PYG{n+nx}{target}\PYG{p}{;}
+    \PYG{n+nx}{target}\PYG{p}{.}\PYG{n+nx}{innerHTML} \PYG{o}{+=} \PYG{l+s+s2}{\PYGZdq{}Clicked\PYGZlt{}br\PYGZgt{}\PYGZdq{}}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}
