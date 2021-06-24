@@ -6,6 +6,25 @@
 == First slide-show section
 
 
+=== Test Slide
+
+****
+
+[twocols]
+--
+* first column
+* first column
+--
+[twocols]
+--
+* second column
+* second column
+--
+
+****
+
+
+
 === Introduction
 
 * Asciidoctor can be used to make presentation

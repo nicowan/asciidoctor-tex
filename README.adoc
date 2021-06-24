@@ -1,219 +1,75 @@
-= Asciidoctor LaTeX
-James Carlson
-2016-06-29
-:sectnums:
-:toc2:
-:env_standard:
-:adl: AsciiDoc-LaTeX
-:adlp: Asciidoctor-LaTeX
-:ad: AsciiDoc
-:adp: http://asciidoctor.org[Asciidoctor]
-:adoc: http://asciidoctor.org/docs/asciidoc-syntax-quick-reference/[AsciiDoc]
-:adlm: http://www.noteshare.io/section/asciidoctor-latex-manual-intro[Asciidoctor-LaTeX Manual]
-////
-:tex: https://www.sharelatex.com/[LaTeX]
-////
-:tex: LaTeX
-:article: http://noteshare.io/book/transcendental-numbers-and-periods[article]
-:ns: http://www.noteshare.io[Noteshare.io]
-:sc: http://www.scripta.io[Scripta.io]
+= Asciidoctor TeX
+Nicolas Wanner
+2021-06-23
+
+:adt: Asciidoctor-Tex
+:adoc: AsciiDoc
 
 == Introduction
 
-Installing asciidoctor from source code
+{adt} is an extension which allows to produce a LaTeX file from a document written with the markup language {adoc}.
 
-gem build asciidoctor-latex.gemspec
-gem install *.gem
+This project is a fork of Asciidoctor-Latex, with different goals. The idea is to provide the most complete conversion of the {adoc} syntax as possible. But does not offer an extension of the syntax.
 
-Asciidoctor LaTeX defines an extended syntax for the AsciiDoc markup language (AsciiDoc-LaTeX) that closely parallels LaTeX for inline and display mathematical formulas and for environments.
-Documents written in this extended markup language can be converted into HTML or LaTeX:
+Some elements of the syntax are not suitable for the production of printable material and are therefore not implemented or partially implemented.
 
-Render as HTML::
-Use `asciidoctor-latex -b html foo.adoc` to produce `foo.html`.
+Render as LaTeX:: Use `asciidoctor-tex foo.adoc` to produce `foo.tex`,
+then use `xelatex foo.tex` to create `foo.pdf`.
 
-Render as LaTeX:: Use `asciidoctor-latex foo.adoc`
-to produce `foo.tex`, then use `xelatex foo.tex` to create `foo.pdf`.
+Quick installation from sources : 
 
-Below, we describe the main
-features of {adl}.  However, since this document
-will not render fully in GitHub, you
-are encouraged to compile it yourself using
-`asciidoctor-latex -b html README.adoc` or to consult the
-http://vschool.s3.amazonaws.com/asciidoctor-latex/README.html[README at S3].
-There is also an online version hosted at http://www.shoobox.io/share/230[shoobox.io],
-a site for editing and distributing AsciiDoc and AsciiDoc-LaTeX documents.
+[source, bash]
+----
+$ cd asciidoctor-tex
+$ gem build asciidoctor-tex.gemspec
+$ gem install *.gem
+----
 
-Asciidoctor LaTeX is developed by James Carlson, Jakub Jirutka, and Dan Allen.
-Display of mathematical text relies on http://docs.mathjax.org/en/latest/start.html[MathJax].
+
+
 
 == Features
 
-{adl} renders inline and displayed mathematical, and it supports a construct akin to LaTeX environments
-for theorems, equations, etc.  These and other features are described briefly below and more fully in <<AsciiDoc-LaTeX environments>>.
+* Document styles
+  ** articles
+  ** books
+  ** beamer
 
-=== Inline and displayed formulas
+* Admonitions
 
-ifdef::env_standard[]
-.Example
-Imagine that `foo.adoc` contains the text below.
-The inline and displayed formulas will be correctly rendered as html or tex.
-----
-The formula $a^2 + b^2 = c^2$ relates the sides
-and hypotenuse of a right triangle.  The formula
-\[
-\int_0^1 x^n dx = \frac{1}{n+1}
-\]
-is something we all learn in Calculus
-----
-endif::[]
+* images
+  ** inline
+  ** bloc
 
-ifndef::env_standard[]
+* table
+  ** Column and row span 
+  ** Grid and frame lines
+  ** Some formatting in cells
 
-.Example
-Imagine that `foo.adoc` contains the text below.
-It will be correctly rendered as html or tex.
-----
- The formula \$a^2 + b^2 = c^2\$ relates the sides
- and hypotenuse of a right triangle.  The formula
- \[
- \int_0^1 x^n dx = \frac{1}{n+1}
- \]
- is something we all learn in Calculus
-----
+* Source code highlighting
+  ** LstListing
+  ** Pygments
 
-.Rendered Text
-[blue]#The formula $a^2 + b^2 = c^2$ relates the sides
-and hypotenuse of a right triangle.  The formula
-\[
-\int_0^1 x^n dx = \frac{1}{n+1}
-\]
-is something we all learn in Calculus.#
-endif::[]
+* Custom templates
 
-=== Environments
-
-ifdef::env_standard[]
-.Example
---
---
-
-----
-  [env.theorem]
-  --
- The Diophantine equation
- \[
-    x^n + y^n = z^n
- \]
- for $n > 2$ has only trivial solutions
---
-----
-endif::[]
-
-ifndef::env_standard[]
-.Example
-
-----
- [env.theorem]
- --
- The Diophantine equation
- \[
-    x^n + y^n = z^n
- \]
- for \$n > 2\$ has only trivial solutions
- --
-----
-
-.Rendered Text
---
---
-
-[env.theorem]
---
-The Diophantine equation
-\[
-  x^n + y^n = z^n
-\]
-for $n > 2$ has only trivial solutions.
---
-endif::[]
-
-
-=== Click blocks
-
-A click block displays its title but not its body.
-If you click on the title, the body is displayed.
-Click on the title again to hide the body.
-
-The title of a click block is displayed in blue.
-
-ifdef::env_standard[]
-.Example
---
---
-
-----
-  [env.question]
-  --
-  What is the speed of light?
-  --
-
-  [click.answer]
-  --
-  300,000 km/sec
-  --
-----
-endif::[]
-
-ifndef::env_standard[]
-.Example
---
---
-
-----
-  [env.question]
-  --
-  What is the speed of light?
-  --
-
-  [click.answer]
-  --
-  300,000 km/sec
-  --
-----
-
-.Rendered Text
---
---
-
-[env.question]
---
-What is the speed of light?
---
-
-[click.answer]
---
-300,000 km/sec
---
-
-endif::[]
-
-
+* Custom environement
 
 == Installation
 
-=== From Rubygems
+//=== From Rubygems
 
-Run `gem install asciidoctor-latex --pre` to install from https://rubygems.org/gems/asciidoctor-latex[RubyGems.org].
-See the https://github.com/asciidoctor/asciidoctor-latex/blob/master/CHANGELOG.adoc[change log] for a list of updates.
+//Run `gem install asciidoctor-latex --pre` to install from https://rubygems.org/gems/asciidoctor-latex[RubyGems.org].
 
-=== From GitHub
+//See the https://github.com/asciidoctor/asciidoctor-latex/blob/master/CHANGELOG.adoc[change log] for a list of updates.
 
-If you would like to install a development version from the repository, use:
+//=== From GitHub
 
- $ git clone https://github.com/asciidoctor/asciidoctor-latex.git
- $ cd asciidoctor-latex
- $ gem build asciidoctor-latex.gemspec
- $ gem install *.gem
+//If you would like to install a development version from the repository, use:
+
+// $ git clone https://github.com/asciidoctor/asciidoctor-latex.git
+// $ cd asciidoctor-latex
+// $ gem build asciidoctor-latex.gemspec
+// $ gem install *.gem
 
 
 ==  Contributing
@@ -230,30 +86,6 @@ or run individual tests with `rake doctest:html` or
 `rake doctest:tex`.
 
 At the moment the tests are for the latex dialect.
-
-== Dialects
-
-Asciidoctor LaTeX processes three dialects of the core AsciiDoc language:
-
-- `asciidoc` (the core language)
-- `manuscript`
-- `latex`
-
-`Asciidoc-latex` is the default dialect. Dialects can be set with the `:dialect` on the
-command line as in this example:
-
-```
-   asciidoctor-latex -a dialect=manuscript foo.adoc
-```
-To set the dialect with the Ruby API, use for example :
-
-```
-   Asciidoctor.convert str, { 'dialect' => 'latex' }
-```
-
-
-
-
 
 == Macros
 
@@ -305,11 +137,9 @@ instead of `stem:latexmth`.
 
 == Document format
 
-Asciidoctor supports two closely-related
-math formats, [blue]#AsciiDoc-LaTeX#
-and [blue]#AsciiMath#.
-In AsciiDoc-LaTeX,
-one can write `\$ a^2 + b^2 = c^2 \$` and
+Asciidoctor supports two closely-related math formats, [blue]#AsciiDoc-LaTeX# and [blue]#AsciiMath#.
+
+In AsciiDoc-LaTeX, one can write `\$ a^2 + b^2 = c^2 \$` and
 ----
  \[
     e^{2\pi \sqrt{-1}} = 1,
@@ -331,244 +161,3 @@ and
   ++++
 ----
 
-ifdef::env_standard[]
-== AsciiDoc-LaTeX environments
-
-AsciiDoctor LaTeX supports an `env` construct that maps to LaTeX environments.
-Thus
-----
-[env.theorem]
---
-There exist infinitely many prime numbers.
---
-----
-renders as an automatically numbered theorem.
-Environments can contain in-line and display mathematics, e.g.,
-----
- [env.theorem]
- --
- A two-by-two matrix is invertible if
- its determinant is nonzero, i.e., if
- \[
-  \left|\begin{matrix}
-    a & b \\
-    c & d
-  \end{matrix}\right| \ne 0
- \]
- This result extends to $n\times n$ matrices.
---
-----
-
-There is complete freedom in parameter `NAME`
-of `[env.NAME]`, Thus,one can write
-----
- [env.definition]
- --
- An integer $n$ is *prime* if (a) it is not
- $\pm 1$ and (b) it has no divisors other
- than $\pm 1$ and $\pm n$.
- --
-----
-or
-----
-[env.joke]
---
-A mathematician, a philosopher, and
-a lawyer met at the local bar
-for a drink.  The lawyer said ...
---
-----
-One can make cross references by labeling
-the environment as in
-----
-[env.joke#mathjoke1]
---
-A mathematician, a philosopher, and
-a lawyer met at the local bar
-for a drink.  The lawyer said ...
---
-----
-then referencing it later as  +<<mathjoke1>>+
-
-Certain environments receive special treatment.
-For numbered equations, use `[env.equation]`
-like this
-
-----
-[env.equation]
---
-a^{p-1} \equiv 1\ \text{mod}\ p
---
-----
-
-An equation number will be displayed only when
-a label for cross-referencing is provided, e.g.,
-
-----
-[env.equation#little-fermat]
---
-a^{p-1} \equiv 1\ \text{mod}\ p
---
-----
-
-For sets of equations, use `[env,equationalign]`:
-----
-[env.equationalign]
---
-A & = 4\pi r^2 \\
-V & = \frac{4}{3} \pi r^3
---
-----
-
-endif::[]
-
-
-ifndef::env_standard[]
-== AsciiDoc-LaTeX environments
-
-Asciidoctor LaTeX supports an `env` construct that maps to LaTeX environments.
-Thus,
-
-----
-[env.theorem]
---
-There exist infinitely many prime numbers.
---
-----
-
-renders as an automatically numbered theorem:
-
-[env.theorem]
---
-There exist infinitely many prime numbers.
---
-
-Environments can contain in-line and display mathematics, e.g.,
-----
- [env.theorem]
- --
- A two-by-two matrix is invertible if
- its determinant is nonzero, i.e., if
- \[
-  \left|\begin{matrix}
-    a & b \\
-    c & d
-  \end{matrix}\right| \ne 0
- \]
- This result extends to $n\times n$ matrices.
---
-----
-
-[env.theorem]
---
-A two-by-two matrix is invertible if
-its determinant is nonzero, i.e., if
-\[
-  \left|\begin{matrix}
-    a & b \\
-    c & d
-  \end{matrix}\right| \ne 0
-\]
-This result extends to $n\times n$ matrices.
---
-
-
-There is complete freedom in parameter `NAME`
-of `[env.NAME]`, Thus,one can write
-----
- [env.definition]
- --
- An integer \$n\$ is *prime* if (a) it is not
- \$\pm 1\$ and (b) it has no divisors other
- than \$\pm 1\$ and \$\pm n\$.
- --
-----
-to obtain
-
-[env.definition]
---
-An integer $n$ is *prime* if (a) it is not
-$\pm 1$ and (b) it has no divisors other
-than $\pm 1$ and $\pm n$.
---
-
-Or one could write
-----
-[env.joke]
---
-A mathematician, a philosopher, and
-a lawyer met at the local bar
-for a drink.  The lawyer said ...
---
-----
-
-[env.joke]
---
-A mathematician, a philosopher, and
-a lawyer met at the local bar
-for a drink.  The lawyer said ...
---
-
-
-One can make cross references by labeling
-the environment as in
-----
-[env.joke#mathjoke1]
---
-A mathematician, a philosopher, and
-a lawyer met at the local bar
-for a drink.  The lawyer said ...
---
-----
-then referencing it later as  +<<mathjoke1>>+
-
-Certain environments receive special treatment.
-For numbered equations, use `[env.equation]`
-like this
-
-----
-[env.equation]
---
-a^{p-1} \equiv 1\ \text{mod}\ p
---
-----
-Here is the rendered version:
-
-[env.equation]
---
-a^{p-1} \equiv 1\ \text{mod}\ p
---
-
-An equation number will be displayed only when
-a label for cross-referencing is provided, e.g.,
-
-----
-[env.equation#little-fermat]
---
-a^{p-1} \equiv 1\ \text{mod}\ p
---
-----
-
-so that now one has
-
-[env.equation#little-fermat]
---
-a^{p-1} \equiv 1\ \text{mod}\ p
---
-
-For sets of equations, use `[env,equationalign]`:
-----
-[env.equationalign]
---
-A & = 4\pi r^2 \\
-V & = \frac{4}{3} \pi r^3
---
-----
-This text renders as
-[env.equationalign#area-volume]
---
-A & = 4\pi r^2 \\
-V & = \frac{4}{3} \pi r^3
---
-
-endif::[]
