@@ -1,6 +1,6 @@
 require 'asciidoctor'
 require 'asciidoctor/extensions' unless RUBY_ENGINE == 'opal'
-require 'asciidoctor/latex/node_processors'
+require 'asciidoctor/tex/node_processors'
 
 $VERBOSE = true
 

@@ -189,7 +189,7 @@ module TexUtilities
 end
 
 module Process
-  include Asciidoctor::Latex
+  include Asciidoctor::Tex
   include TexUtilities
   $tex = TexUtilities
 
@@ -209,7 +209,7 @@ module Process
 
       # Select the template directory (custom or default)
       templateDir = node.document.attributes['latextemplate']
-      templateDir = Asciidoctor::Latex::DATA_DIR if templateDir.nil?
+      templateDir = Asciidoctor::Tex::DATA_DIR if templateDir.nil?
 
       # Select the imagesdir (document's dir or the specified one)
       imagesDir = node.document.attributes['imagesdir']

@@ -5,5 +5,5 @@ module Asciidoctor
   end
 end
 
-require 'asciidoctor/latex/version'
-require 'asciidoctor/latex/converter'
+require 'asciidoctor/tex/version'
+require 'asciidoctor/tex/converter'
