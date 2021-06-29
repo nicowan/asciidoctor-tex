@@ -42,13 +42,13 @@ module TexUtilities
     # args array contains the environment's body which is not an argument -> decrement
     pushEnv(env, args.length - 1)
     body = args.pop
-    "\n#{self.begin(env)}#{braces *args}\n#{body}\n#{self.end(env)}\n"
+    "#{self.begin(env)}#{braces *args}\n#{body}\n#{self.end(env)}"
   end
 
   def self.env_opt(env, opt, *args)
     # Do not support custom environment with optional args
     body = args.pop
-    "\n#{self.begin(env)}〈#{opt}〉#{braces *args}\n#{body}\n#{self.end(env)}\n"
+    "#{self.begin(env)}〈#{opt}〉#{braces *args}\n#{body}\n#{self.end(env)}"
   end
 
   # map '_' to '-' and prefix by 'x' if the leading character is '-'
@@ -478,13 +478,16 @@ module Process
     # BlockType
     blockType = ""
     blockType = node.attributes['style'] if node.attributes['style'] != nil
-    blockType = "adocEnv#{blockType.capitalize()}"
+    puts blockType
+    blockType = "adocEnv#{blockType}"
 
     # Stripped content
     content = node.content
     content.strip!
 
-    return $tex.env( blockType, title, content)
+    # The percent added at the end of the output aviods line break after 
+    # the environment which is needed for minipage to work well in LaTeX
+    return $tex.env( blockType, title, content) << "%"
   end
 
   def self.sidebar(node)
