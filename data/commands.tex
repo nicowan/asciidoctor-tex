@@ -144,17 +144,32 @@
   \end{tcolorbox}  
 }
 
-% Defines the adocEnvFrame environment (for beamer documents)
-\newenvironment{adocEnvFrame}[1]{
-  \begin{frame}{#1}
-}{
-  \end{frame}  
+\newenvironment{adocEnvColumnOneHalf}[1]{%
+  \begin{minipage}[t]{0.45\textwidth}
+    %\textbf{#1}
+    
+}{%
+    \vfill
+  \end{minipage}
 }
 
+\newenvironment{adocEnvColumnOneThird}[1]{%
+  \begin{minipage}[t]{0.30\textwidth}
+    %\textbf{#1}
+    
+}{%
+    \vfill
+  \end{minipage}
+}
 
-
-
-
+\newenvironment{adocEnvColumnTwoThird}[1]{%
+  \begin{minipage}[t]{0.65\textwidth}
+    %\textbf{#1}
+    
+}{%
+    \vfill
+  \end{minipage}
+}
 
 % Command to add new image source path to an existing one
 %

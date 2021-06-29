@@ -3,25 +3,51 @@
 :source-highlighter: pygments
 :sectnums:
 
-== First slide-show section
+== First slide-show section 
 
 
-=== Test Slide
+=== Half / Half
 
-****
-
-[twocols]
+[ColumnOneHalf]
 --
-* first column
-* first column
---
-[twocols]
---
-* second column
-* second column
+* useless
+
+* bad
+
+* an example
 --
 
-****
+[ColumnOneHalf]
+--
+
+[source, js]
+----
+function onClick(event) {
+    let target = event.target;
+    target.innerHTML += "Clicked<br>";
+}
+----
+
+--
+
+=== One / Two
+
+[ColumnOneThird]
+--
+image::objectif.png[width=50%]
+--
+
+[ColumnTwoThird]
+--
+
+* Stairway to Heaven
+
+* HighWay to Hell
+
+* Music for the Paradise
+
+--
+
 
 
 
