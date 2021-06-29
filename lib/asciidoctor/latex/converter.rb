@@ -5,7 +5,7 @@ require 'asciidoctor/latex/node_processors'
 $VERBOSE = true
 
 module Asciidoctor
-  module Latex
+  module Tex
 
     class LatexEscape < Asciidoctor::Extensions::Preprocessor 
       def process document, reader

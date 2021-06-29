@@ -2,15 +2,15 @@
 require File.expand_path('../lib/asciidoctor/latex/version', __FILE__)
 
 Gem::Specification.new do |s|
-  s.name          = 'asciidoctor-latex'
-  s.version       = Asciidoctor::Latex::VERSION
-  s.authors       = ['James Carlson', 'Jakub Jirutka', 'Dan Allen']
-  s.email         = 'jxxcarlson@mac.com'
-  s.homepage      = 'https://github.com/asciidoctor/asciidoctor-latex'
+  s.name          = 'asciidoctor-tex'
+  s.version       = Asciidoctor::Tex::VERSION
+  s.authors       = ['Nicolas Wanner', 'James Carlson', 'Jakub Jirutka', 'Dan Allen']
+  s.email         = 'nicolas.wanner@gmail.com'
+  s.homepage      = 'https://github.com/nicowan/asciidoctor-latex'
   s.license       = 'MIT'
 
-  s.summary       = 'Converts AsciiDoc documents to Latex, provides LaTeX extensions to Asciidoc'
-  s.description   = 'An extension for Asciidoctor that converts AsciiDoc documents to LaTeX and provides LaTeX extensions to Asciidoc.'
+  s.summary       = 'Converts AsciiDoc documents to Latex'
+  s.description   = 'An extension for Asciidoctor that converts AsciiDoc documents to LaTeX.'
 
   begin
     s.files       = `git ls-files -z -- */* {CHANGELOG,LICENSE,manual,Rakefile,README}*`.split "\0"
