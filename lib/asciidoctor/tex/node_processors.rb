@@ -99,6 +99,17 @@ module TexUtilities
     result = result.gsub("]", '〉')
   end
 
+  def self.urlEscape(str)
+    coder  = HTMLEntities.new
+    result = coder.encode(str)
+    result = result.gsub("_", '＿')
+    result = result.gsub("%", '‰')
+    # result = result.gsub("{", '《')
+    # result = result.gsub("}", '》')
+    # result = result.gsub("[", '〈')
+    # result = result.gsub("]", '〉')
+  end
+
   def self.definedMacro(name)
     if name.start_with?("adocMacro") || name.start_with?("adocEnv")
       if @definitions[name] != nil
@@ -924,6 +935,7 @@ module Process
         target = node.target
         # TODO Improve the external URL detection
         if target.include? "http:" or target.include? "https:"
+          target = $tex.urlEscape(target)
           $tex.macro('href', target, node.text)
         else
           reference =  $tex.normalize(node.target)

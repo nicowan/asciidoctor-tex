@@ -38,6 +38,8 @@ module Asciidoctor
         output = output.gsub('》', "}")
         output = output.gsub('〈', "[")
         output = output.gsub('〉', "]")
+        output = output.gsub('＿', "_")
+        output = output.gsub('‰',  "%")
       end
     end
 
