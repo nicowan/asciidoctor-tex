@@ -549,7 +549,9 @@ module Process
     end
   end
 
-
+  def self.thematicBreak(node)
+    return $tex.macro("dotfill") + "\n\n"
+  end
 
 
 

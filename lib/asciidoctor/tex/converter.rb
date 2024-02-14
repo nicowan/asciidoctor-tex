@@ -94,6 +94,7 @@ module Asciidoctor
           when 'example';             Process.example(node)
           when 'preamble';            Process.preamble(node)
           when 'toc';                 Process.toc(node)
+          when 'thematic_break';      Process.thematicBreak(node)
 
           # Inline -----------------------------------------------------
           when 'inline_quoted';       Process.inlineQuoted(node)
@@ -108,7 +109,6 @@ module Asciidoctor
           when 'inline_callout';      warn "#{node.node_name} is not implemented"
 
           # Unprocessed nodes -------------------------------------------------
-          when 'thematic_break';      warn "#{node.node_name} is not implemented"
           when 'colist';              warn "#{node.node_name} is not implemented"
           when 'embedded';            warn "#{node.node_name} is not implemented"
           when 'video';               warn "#{node.node_name} is not implemented"
