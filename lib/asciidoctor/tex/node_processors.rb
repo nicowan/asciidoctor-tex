@@ -759,8 +759,10 @@ module Process
     end
 
     def getContent(grid, frame)
-      result = self.content.strip
+      result = self.content
       if result != nil
+        result = result.strip
+
         # Manage headings
         result = $tex.macro("adocMacroTableHead", result) if self.heading == :head
         result = $tex.macro("adocMacroTableFoot", result) if self.heading == :foot
